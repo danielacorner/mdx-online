@@ -49,14 +49,13 @@ export default () => {
   const [isLightTheme, setIsLightTheme] = useState(false);
 
   const handleEditorChange = (ev, value) => {
-    // 1. compress
+    setValue(value);
     const compressed = lzString.compressToEncodedURIComponent(value);
-    setValue(compressed);
-    // 2. encode
     history.push(`/?${compressed}`);
   };
   const handleBuild = () => {
-    history.push(`/deck/${value}`);
+    const compressed = lzString.compressToEncodedURIComponent(value);
+    history.push(`/deck/${compressed}`);
   };
 
   return (
@@ -74,7 +73,7 @@ export default () => {
         </div>
       </div>
       <ControlledEditor
-        value={value && hm.decompress(value)}
+        value={value}
         onChange={handleEditorChange}
         height={`100vh`}
         language="markdown"

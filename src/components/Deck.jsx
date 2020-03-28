@@ -7,7 +7,8 @@ import { useHistory, useLocation, useParams } from "react-router";
 import { Button } from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
 import PresentIcon from "@material-ui/icons/PlayArrow";
-import jsscompress from "js-string-compression";
+import lzString from "lz-string";
+import { Link } from "react-router-dom";
 
 const SlideStyles = styled.div`
   height: 100vh;
@@ -24,12 +25,13 @@ const SlideStyles = styled.div`
 const DeckStyles = styled.div``;
 
 export default function Deck() {
-  var hm = new jsscompress.Hauffman();
   const { deckData } = useParams();
   const history = useHistory();
   const { search, hash, pathname } = useLocation();
   const deckDataFromLocation = search.slice(1);
-  const deckDataDecoded = deckData || decodeURI(deckDataFromLocation);
+  const deckDataDecoded = lzString.decompressFromEncodedURIComponent(
+    deckData || deckDataFromLocation
+  );
 
   const separators = ["---", "\\*\\*\\*"];
   const slides = deckDataDecoded.split(new RegExp(separators.join("|"), "g"));
@@ -101,15 +103,15 @@ const ControlsStyles = styled.div`
 
 function Controls({ setIsPresentationMode }) {
   const { pathname } = useLocation();
-  const pathBackToEdit = "/" + pathname.split("/")[2];
+  const pathBackToEdit = "/?" + pathname.split("/")[2];
   return (
     <ControlsStyles>
-      <a href={pathBackToEdit}>
+      <Link to={pathBackToEdit}>
         <Button variant="contained">
           Edit
           <EditIcon />
         </Button>
-      </a>
+      </Link>
       <Button variant="contained" onClick={() => setIsPresentationMode(true)}>
         Present
         <PresentIcon />
