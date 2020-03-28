@@ -4,8 +4,7 @@ import { ControlledEditor } from "@monaco-editor/react";
 import styled from "styled-components/macro";
 import { Switch, Button } from "@material-ui/core";
 import { useHistory, useLocation } from "react-router-dom";
-
-import qs from "query-string";
+import lzString from "lz-string";
 
 const CONTROLS_HEIGHT = 20;
 const AppStyles = styled.div`
@@ -41,20 +40,23 @@ const AppStyles = styled.div`
 `;
 
 export default () => {
-  const parsed = qs.parse(window.location.search);
   const history = useHistory();
-  const location = useLocation();
-  console.log("⚡🚨: parsed", parsed);
-  const [value, setValue] = useState(decodeURI(location.search.slice(1))); // slice off the question mark
-  console.log("⚡🚨: location", location.search);
+  const { search } = useLocation();
+  const deckData = search.slice(1);
+  const decompressed = lzString.decompressFromEncodedURIComponent(deckData);
+  const [value, setValue] = useState(decompressed);
+
   const [isLightTheme, setIsLightTheme] = useState(false);
 
   const handleEditorChange = (ev, value) => {
-    setValue(value);
-    history.push(`/?${encodeURI(value)}`);
+    // 1. compress
+    const compressed = lzString.compressToEncodedURIComponent(value);
+    setValue(compressed);
+    // 2. encode
+    history.push(`/?${compressed}`);
   };
   const handleBuild = () => {
-    history.push(`/deck/${encodeURI(value)}`);
+    history.push(`/deck/${value}`);
   };
 
   return (
@@ -72,7 +74,7 @@ export default () => {
         </div>
       </div>
       <ControlledEditor
-        value={value}
+        value={value && hm.decompress(value)}
         onChange={handleEditorChange}
         height={`100vh`}
         language="markdown"

@@ -1,27 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
-import App from "./App";
 import * as serviceWorker from "./serviceWorker";
-import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
-import Deck from "./components/Deck";
 
-const AppWithRouter = () => (
-  <BrowserRouter>
-    <Switch>
-      <Route exact={true} path="/">
-        <App />
-      </Route>
-      <Route exact={true} path="/edit">
-        <App />
-      </Route>
-      <Route path="/deck/:deckData?">
-        <Deck />
-      </Route>
-      <Route render={() => <Redirect to="/" />} />
-    </Switch>
-  </BrowserRouter>
-);
+import AppWithRouter from "./Router";
 
 ReactDOM.render(<AppWithRouter />, document.getElementById("root"));
 
