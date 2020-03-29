@@ -5,7 +5,6 @@ import { useSwipeable } from "react-swipeable";
 import Markdown from "markdown-to-jsx";
 import { useHistory, useLocation, useParams } from "react-router";
 import { Button } from "@material-ui/core";
-import EditIcon from "@material-ui/icons/Edit";
 import PresentIcon from "@material-ui/icons/PlayArrow";
 import lzString from "lz-string";
 import { Link } from "react-router-dom";
@@ -99,6 +98,9 @@ const ControlsStyles = styled.div`
   .MuiSvgIcon-root {
     padding-left: 6px;
   }
+  .editIcon {
+    transform: rotate(0.5turn);
+  }
 `;
 
 function Controls({ setIsPresentationMode }) {
@@ -108,8 +110,8 @@ function Controls({ setIsPresentationMode }) {
     <ControlsStyles>
       <Link to={pathBackToEdit}>
         <Button variant="contained">
+          <PresentIcon className="editIcon" />
           Edit
-          <EditIcon />
         </Button>
       </Link>
       <Button variant="contained" onClick={() => setIsPresentationMode(true)}>
