@@ -26,8 +26,9 @@ export default function Deck() {
   const history = useHistory();
   const { search, hash, pathname } = useLocation();
   const deckDataFromLocation = search.slice(1);
+  const deckDataEncoded = deckData || deckDataFromLocation;
   const deckDataDecoded = lzString.decompressFromEncodedURIComponent(
-    deckData || deckDataFromLocation
+    deckDataEncoded
   );
 
   const separators = ["---", "\\*\\*\\*"];
@@ -72,6 +73,7 @@ export default function Deck() {
     <Layout
       isPresentationMode={isPresentationMode}
       deckDataDecoded={deckDataDecoded}
+      deckDataEncoded={deckDataEncoded}
       setIsPresentationMode={setIsPresentationMode}
       handleBuild={null}
     >

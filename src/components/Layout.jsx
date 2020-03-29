@@ -76,6 +76,7 @@ const ControlsStyles = styled.div`
 
 export default function Layout({
   setIsPresentationMode,
+  deckDataEncoded,
   deckDataDecoded,
   handleBuild,
   isPresentationMode,
@@ -83,7 +84,9 @@ export default function Layout({
 }) {
   const isPresentationPage = Boolean(setIsPresentationMode);
   const { pathname, search } = useLocation();
-  const { href } = window.location;
+  const { origin } = window.location;
+  const pathToShare = `${origin}/?deck=${deckDataEncoded}`;
+
   const pathBackToEdit = "/?" + pathname.split("/")[2];
   const shareData = {
     title: "MDX slides online",
@@ -91,9 +94,9 @@ export default function Layout({
       deckDataDecoded && deckDataDecoded.length > 10
         ? `${deckDataDecoded.slice(0, 10)}...`
         : deckDataDecoded,
-    url: href
+    url: pathToShare
   };
-  const [, /* isCopied */ setCopied] = useCopyClipboard(href);
+  const [, /* isCopied */ setCopied] = useCopyClipboard(pathToShare);
   const [copiedValue, setCopiedValue] = useState();
   const isCopiedValueSameAsCurrentValue =
     copiedValue === `${window.location.origin}${pathname}${search}`;
@@ -113,9 +116,8 @@ export default function Layout({
               variant="contained"
               className={`${showSnackbar ? "copied" : ""}`}
               onClick={() => {
-                setCopied(href);
-                setCopiedValue(href);
-                console.log("🌟🚨: Controls -> href", href);
+                setCopied(pathToShare);
+                setCopiedValue(pathToShare);
               }}
             >
               Copy url

@@ -5,6 +5,7 @@ import { Switch } from "@material-ui/core";
 import { useHistory, useLocation } from "react-router-dom";
 import lzString from "lz-string";
 import Layout from "./components/Layout";
+import qs from "query-string";
 
 const defaultValue = `hello
 ---
@@ -18,6 +19,11 @@ export default () => {
   const [value, setValue] = useState(deckDataDecoded || defaultValue);
 
   const [isLightTheme, setIsLightTheme] = useState(false);
+
+  const query = qs.parse(search);
+  if ("deck" in query) {
+    history.push(`/deck/${query.deck}`);
+  }
 
   const handleEditorChange = (ev, value) => {
     const compressed = lzString.compressToEncodedURIComponent(value);
@@ -33,6 +39,7 @@ export default () => {
     <Layout
       isPresentationMode={false}
       deckDataDecoded={deckDataDecoded}
+      deckDataEncoded={deckData}
       setIsPresentationMode={null}
       handleBuild={handleBuild}
     >
