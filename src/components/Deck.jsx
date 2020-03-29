@@ -75,7 +75,7 @@ export default function Deck() {
       setIsPresentationMode={setIsPresentationMode}
       handleBuild={null}
     >
-      <DeckStyles {...swipeHandlers}>
+      <DeckStyles className="presentation-deck" {...swipeHandlers}>
         <SlideStyles>
           <Markdown>{slides[slideIndex]}</Markdown>
         </SlideStyles>
