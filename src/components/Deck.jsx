@@ -4,10 +4,8 @@ import { useEventListener } from "../utils/customHooks";
 import { useSwipeable } from "react-swipeable";
 import Markdown from "markdown-to-jsx";
 import { useHistory, useLocation, useParams } from "react-router";
-import { Button } from "@material-ui/core";
-import PresentIcon from "@material-ui/icons/PlayArrow";
 import lzString from "lz-string";
-import { Link } from "react-router-dom";
+import Layout from "./Layout";
 
 const SlideStyles = styled.div`
   height: 100vh;
@@ -71,53 +69,17 @@ export default function Deck() {
   });
 
   return (
-    <DeckStyles {...swipeHandlers}>
-      <SlideStyles>
-        <Markdown>{slides[slideIndex]}</Markdown>
-      </SlideStyles>
-      {!isPresentationMode && (
-        <Controls setIsPresentationMode={setIsPresentationMode} />
-      )}
-    </DeckStyles>
-  );
-}
-
-const ControlsStyles = styled.div`
-  position: fixed;
-  bottom: 1em;
-  right: 1em;
-  display: grid;
-  grid-auto-flow: column;
-  grid-gap: 0.5em;
-  a {
-    text-decoration: none;
-  }
-  .MuiButton-root {
-    padding: 6px 12px;
-  }
-  .MuiSvgIcon-root {
-    padding-left: 6px;
-  }
-  .editIcon {
-    transform: rotate(0.5turn);
-  }
-`;
-
-function Controls({ setIsPresentationMode }) {
-  const { pathname } = useLocation();
-  const pathBackToEdit = "/?" + pathname.split("/")[2];
-  return (
-    <ControlsStyles>
-      <Link to={pathBackToEdit}>
-        <Button variant="contained">
-          <PresentIcon className="editIcon" />
-          Edit
-        </Button>
-      </Link>
-      <Button variant="contained" onClick={() => setIsPresentationMode(true)}>
-        Present
-        <PresentIcon />
-      </Button>
-    </ControlsStyles>
+    <Layout
+      isPresentationMode={isPresentationMode}
+      deckDataDecoded={deckDataDecoded}
+      setIsPresentationMode={setIsPresentationMode}
+      handleBuild={null}
+    >
+      <DeckStyles {...swipeHandlers}>
+        <SlideStyles>
+          <Markdown>{slides[slideIndex]}</Markdown>
+        </SlideStyles>
+      </DeckStyles>
+    </Layout>
   );
 }

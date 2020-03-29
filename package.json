@@ -3,8 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@lokibai/react-use-copy-clipboard": "^1.0.5",
     "@material-ui/core": "^4.9.5",
     "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.47",
     "@monaco-editor/react": "^3.1.1",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.4.1",
