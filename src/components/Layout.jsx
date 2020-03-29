@@ -11,7 +11,8 @@ import { Link } from "react-router-dom";
 import { useCopyClipboard } from "@lokibai/react-use-copy-clipboard";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import { blue, indigo } from "@material-ui/core/colors";
-import { CastButton } from "react-cast-sender";
+// import { CastButton } from "react-cast-sender";
+// import { useCastPlayer } from "react-cast-sender";
 
 const theme = createMuiTheme({
   palette: {
@@ -70,11 +71,19 @@ const ControlsStyles = styled.div`
         padding-left: 6px;
       }
     }
-    google-cast-launcher {
+    google-cast-launcher,
+    [is="google-cast-button"] {
       width: 32.4px;
       height: 32.4px;
     }
   }
+  [is="google-cast-button"] {
+    padding: 0 4px;
+    width: 38.4px;
+    border: none;
+    background: none;
+  }
+
   .editIcon {
     transform: rotate(0.5turn);
   }
@@ -164,7 +173,7 @@ export default function Layout({
                 <FullScreenIcon style={{ transform: "scale(1.35)" }} />
               </Button>
               <Button variant="contained" className="square">
-                <CastButton />
+                <button is="google-cast-button" onClick={handleCast}></button>
               </Button>
             </>
           ) : (
@@ -189,4 +198,8 @@ async function handleShare(shareData) {
   } catch (err) {
     alert(err);
   }
+}
+function handleCast() {
+  // eslint-disable-next-line no-undef
+  var mediaInfo = new chrome.cast.media.MediaInfo(currentMediaURL, contentType);
 }

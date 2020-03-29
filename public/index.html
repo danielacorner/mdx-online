@@ -3,9 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>MDX Online</title>
+    <!-- https://stackoverflow.com/questions/43391307/chromecast-button-with-html-and-javascript -->
+    <script src="//www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
   </head>
-  <body>
+  <body style="overflow: hidden;">
     <div id="root"></div>
   </body>
+  <script>
+    // https://developers.google.com/cast/docs/chrome_sender/integrate
+    window["__onGCastApiAvailable"] = function(isAvailable) {
+      if (isAvailable) {
+        initializeCastApi();
+      }
+    };
+    initializeCastApi = function() {
+      cast.framework.CastContext.getInstance().setOptions({
+        receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID
+      });
+    };
+  </script>
 </html>
