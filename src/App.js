@@ -10,6 +10,7 @@ import qs from "query-string";
 const defaultValue = `hello
 ---
 world`;
+const PROMPT_HEIGHT_EM = 5;
 
 export default () => {
   const history = useHistory();
@@ -52,18 +53,18 @@ export default () => {
       </div>
       <div style={{ pointerEvents: "none" }}>
         <ControlledEditor
-          height={`3em`}
+          height={`${PROMPT_HEIGHT_EM}em`}
           language="markdown"
           value={`
-          <!-- type your slides, separated by "---" -->
+<!-- type your slides, separated by "---" -->
           `}
-          options={{ lineNumbers: "off" }}
+          options={{ lineNumbers: "off", wordWrap: "on" }}
         />
       </div>
       <ControlledEditor
         value={value}
         onChange={handleEditorChange}
-        height={`calc(100vh - 3em)`}
+        height={`calc(100vh - ${PROMPT_HEIGHT_EM}em)`}
         language="markdown"
         theme={isLightTheme ? "light" : "dark"}
         options={{ wordWrap: "on" }}
