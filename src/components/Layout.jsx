@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import { useCopyClipboard } from "@lokibai/react-use-copy-clipboard";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import { blue, indigo } from "@material-ui/core/colors";
+import { CastButton } from "react-cast-sender";
 
 const theme = createMuiTheme({
   palette: {
@@ -61,9 +62,14 @@ const ControlsStyles = styled.div`
   }
   .MuiButton-root {
     padding: 6px 12px;
-  }
-  .MuiSvgIcon-root {
-    padding-left: 6px;
+    &.square {
+      padding: 0;
+    }
+    &:not(.square) {
+      .MuiSvgIcon-root {
+        padding-left: 6px;
+      }
+    }
   }
   .editIcon {
     transform: rotate(0.5turn);
@@ -83,7 +89,7 @@ export default function Layout({
   children
 }) {
   const isPresentationPage = Boolean(setIsPresentationMode);
-  const { pathname, search } = useLocation();
+  const { pathname } = useLocation();
   const { origin } = window.location;
   const pathToShare = `${origin}/?deck=${deckDataEncoded}`;
 
@@ -98,9 +104,11 @@ export default function Layout({
   };
   const [, /* isCopied */ setCopied] = useCopyClipboard(pathToShare);
   const [copiedValue, setCopiedValue] = useState();
-  const isCopiedValueSameAsCurrentValue =
-    copiedValue === `${window.location.origin}${pathname}${search}`;
+  const isCopiedValueSameAsCurrentValue = copiedValue === pathToShare;
   const showSnackbar = copiedValue && isCopiedValueSameAsCurrentValue;
+
+  console.log("🌟🚨: copiedValue", copiedValue);
+  console.log("🌟🚨: showSnackbar", showSnackbar);
   return (
     <ThemeProvider theme={theme}>
       <AppStyles>
@@ -118,9 +126,10 @@ export default function Layout({
               onClick={() => {
                 setCopied(pathToShare);
                 setCopiedValue(pathToShare);
+                setTimeout(() => setCopiedValue(null), 2500);
               }}
             >
-              Copy url
+              Share
               <FileCopyIcon />
             </Button>
           )}
@@ -133,6 +142,7 @@ export default function Layout({
                 </Button>
               </Link>
               <Button
+                className="square"
                 variant="contained"
                 color="primary"
                 onClick={() => {
@@ -147,9 +157,9 @@ export default function Layout({
                   setIsPresentationMode(true);
                 }}
               >
-                Present
                 <FullScreenIcon style={{ transform: "scale(1.35)" }} />
               </Button>
+              <CastButton />
             </>
           ) : (
             <Button variant="contained" color="primary" onClick={handleBuild}>
@@ -158,7 +168,7 @@ export default function Layout({
             </Button>
           )}
 
-          <Snackbar open={showSnackbar} autoHideDuration={6000}>
+          <Snackbar open={showSnackbar} autoHideDuration={3000}>
             <Alert severity="success">Copied to clipboard!</Alert>
           </Snackbar>
         </ControlsStyles>
