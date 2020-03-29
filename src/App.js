@@ -39,22 +39,25 @@ const AppStyles = styled.div`
   }
 `;
 
+const defaultValue = `hello
+---
+world`;
+
 export default () => {
   const history = useHistory();
   const { search } = useLocation();
   const deckData = search.slice(1);
   const decompressed = lzString.decompressFromEncodedURIComponent(deckData);
-  const [value, setValue] = useState(decompressed);
+  const [value, setValue] = useState(decompressed || defaultValue);
+  const compressed = lzString.compressToEncodedURIComponent(value);
 
   const [isLightTheme, setIsLightTheme] = useState(false);
 
   const handleEditorChange = (ev, value) => {
-    setValue(value);
-    const compressed = lzString.compressToEncodedURIComponent(value);
     history.push(`/?${compressed}`);
+    setValue(value);
   };
   const handleBuild = () => {
-    const compressed = lzString.compressToEncodedURIComponent(value);
     history.push(`/deck/${compressed}`);
   };
 
@@ -72,10 +75,20 @@ export default () => {
           </Button>
         </div>
       </div>
+      <div style={{ pointerEvents: "none" }}>
+        <ControlledEditor
+          height={`3em`}
+          language="markdown"
+          value={`
+          <!-- type your slides, separated by "---" -->
+          `}
+          options={{ lineNumbers: "off" }}
+        />
+      </div>
       <ControlledEditor
         value={value}
         onChange={handleEditorChange}
-        height={`100vh`}
+        height={`calc(100vh - 3em)`}
         language="markdown"
         theme={isLightTheme ? "light" : "dark"}
         options={{ wordWrap: "on" }}

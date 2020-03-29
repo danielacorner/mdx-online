@@ -45,7 +45,7 @@ export default function Deck() {
 
   // sync the hash with the slide index
   useEffect(() => {
-    history.push(`${pathname}#${slideIndex}`, { replace: true });
+    history.replace(`${pathname}#${slideIndex}`);
   }, [slideIndex, pathname, history]);
 
   const handleKeyDown = event => {

@@ -45,6 +45,7 @@
     ]
   },
   "devDependencies": {
+    "electron": "^8.2.0",
     "gatsby-source-filesystem": "^2.1.48",
     "mdx-deck": "^4.1.0"
   }
