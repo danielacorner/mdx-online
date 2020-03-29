@@ -70,6 +70,10 @@ const ControlsStyles = styled.div`
         padding-left: 6px;
       }
     }
+    google-cast-launcher {
+      width: 32.4px;
+      height: 32.4px;
+    }
   }
   .editIcon {
     transform: rotate(0.5turn);
@@ -159,7 +163,9 @@ export default function Layout({
               >
                 <FullScreenIcon style={{ transform: "scale(1.35)" }} />
               </Button>
-              <CastButton />
+              <Button variant="contained" className="square">
+                <CastButton />
+              </Button>
             </>
           ) : (
             <Button variant="contained" color="primary" onClick={handleBuild}>
