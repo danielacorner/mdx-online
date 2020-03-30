@@ -6,10 +6,14 @@ import { useHistory, useLocation } from "react-router-dom";
 import lzString from "lz-string";
 import Layout from "./components/Layout";
 import qs from "query-string";
+import styled from "styled-components/macro";
 
-const defaultValue = `My Sweet Deck 😎🆒
+const StyledDiv = styled.div``;
+
+const defaultValue = `# My Sweet Deck
+## 😎✨🆒
 ---
-[Markdown Cheat Sheet](https://www.markdownguide.org/cheat-sheet/)
+Check out the [Markdown Cheat Sheet](https://www.markdownguide.org/cheat-sheet/)
 ---
 ![A random image](https://picsum.photos/250/500)`;
 const PROMPT_HEIGHT_EM = 5;
@@ -46,13 +50,29 @@ export default () => {
       setIsPresentationMode={null}
       handleBuild={handleBuild}
     >
-      <div className="controls">
+      <StyledDiv
+        className="controls"
+        css={`
+          .themeSwitch {
+            z-index: 999;
+            position: fixed;
+            bottom: 1em;
+            left: 1em;
+            .dark {
+              color: white;
+            }
+            .light {
+              color: black;
+            }
+          }
+        `}
+      >
         <div className="themeSwitch">
           <span className="dark">Dark</span>{" "}
           <Switch onChange={() => setIsLightTheme(!isLightTheme)} />{" "}
           <span className="light">Light</span>
         </div>
-      </div>
+      </StyledDiv>
       <div style={{ pointerEvents: "none" }}>
         <ControlledEditor
           height={`${PROMPT_HEIGHT_EM}em`}

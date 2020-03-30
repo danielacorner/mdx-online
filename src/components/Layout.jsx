@@ -21,34 +21,11 @@ const theme = createMuiTheme({
   }
 });
 
-const CONTROLS_HEIGHT = 20;
-
-const AppStyles = styled.div`
+const LayoutStyles = styled.div`
   * {
     box-sizing: border-box;
   }
-min-height:100vh;
-  .controls {
-    /* position: relative;
-    height: ${CONTROLS_HEIGHT}px;
-    display: flex;
-    padding: 0.5em;
-    align-items: center;
-    justify-content: space-around; */
-  }
-
-  .themeSwitch {
-    z-index: 999;
-    position: fixed;
-    bottom: ${CONTROLS_HEIGHT}px;
-    left: ${CONTROLS_HEIGHT}px;
-    .dark {
-      color: white;
-    }
-    .light {
-      color: black;
-    }
-  }
+  min-height: 100vh;
 `;
 
 const ControlsStyles = styled.div`
@@ -123,7 +100,7 @@ export default function Layout({
 
   return (
     <ThemeProvider theme={theme}>
-      <AppStyles>
+      <LayoutStyles>
         {children}
         <ControlsStyles>
           {Boolean("share" in navigator) ? (
@@ -191,7 +168,7 @@ export default function Layout({
             <Alert severity="success">Copied to clipboard!</Alert>
           </Snackbar>
         </ControlsStyles>
-      </AppStyles>
+      </LayoutStyles>
     </ThemeProvider>
   );
 }

@@ -13,10 +13,12 @@ const SlideStyles = styled.div`
   background: hsla(0, 0%, 10%, 1);
   color: white;
   display: grid;
+  text-align: center;
   place-items: center;
-  font-size: 3em;
+  font-size: 2em;
   font-family: "Sen", sans-serif;
   user-select: none;
+  padding: 1em;
 `;
 
 const DeckStyles = styled.div`
@@ -82,9 +84,15 @@ export default function Deck() {
       handleBuild={null}
     >
       <DeckStyles className="presentation-deck" {...swipeHandlers}>
-        <SlideStyles>
-          <Markdown>{slides[slideIndex]}</Markdown>
-        </SlideStyles>
+        {/* TODO: render all slides, then hide others */}
+        {slides.map((slide, idx) => (
+          <SlideStyles
+            key={idx}
+            css={idx === slideIndex ? `` : `display: none;`}
+          >
+            <Markdown>{slide}</Markdown>
+          </SlideStyles>
+        ))}
       </DeckStyles>
     </Layout>
   );
