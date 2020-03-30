@@ -19,7 +19,11 @@ const SlideStyles = styled.div`
   user-select: none;
 `;
 
-const DeckStyles = styled.div``;
+const DeckStyles = styled.div`
+  img {
+    /* TODO: size images to fit screen */
+  }
+`;
 
 export default function Deck() {
   const { deckData } = useParams();

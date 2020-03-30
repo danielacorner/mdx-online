@@ -19,8 +19,12 @@
     };
     initializeCastApi = function() {
       cast.framework.CastContext.getInstance().setOptions({
-        receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID
+        receiverApplicationId: "336697D3"
+        // receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID
       });
+      // const castSession = new cast.framework.CastSession();
+      // console.log("🌟🚨: initializeCastApi -> castSession", castSession);
+      // castSession.sendMessage("test-namespace", "helloooo");
     };
   </script>
 </html>

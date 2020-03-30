@@ -7,9 +7,11 @@ import lzString from "lz-string";
 import Layout from "./components/Layout";
 import qs from "query-string";
 
-const defaultValue = `hello
+const defaultValue = `My Sweet Deck 😎🆒
 ---
-world`;
+[Markdown Cheat Sheet](https://www.markdownguide.org/cheat-sheet/)
+---
+![A random image](https://picsum.photos/250/500)`;
 const PROMPT_HEIGHT_EM = 5;
 
 export default () => {
@@ -56,8 +58,8 @@ export default () => {
           height={`${PROMPT_HEIGHT_EM}em`}
           language="markdown"
           value={`
-<!-- type your slides, separated by "---" -->
-          `}
+<!-- type your slides, in Markdown, separated by "---" -->
+`}
           options={{ lineNumbers: "off", wordWrap: "on" }}
         />
       </div>
