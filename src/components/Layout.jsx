@@ -21,7 +21,7 @@ const theme = createMuiTheme({
   },
 });
 
-const AppStyles = styled.div`
+const LayoutStyles = styled.div`
   * {
     box-sizing: border-box;
   }
@@ -100,7 +100,7 @@ export default function Layout({
 
   return (
     <ThemeProvider theme={theme}>
-      <AppStyles>
+      <LayoutStyles>
         {children}
         <ControlsStyles>
           {Boolean("share" in navigator) ? (
@@ -168,7 +168,7 @@ export default function Layout({
             <Alert severity="success">Copied to clipboard!</Alert>
           </Snackbar>
         </ControlsStyles>
-      </AppStyles>
+      </LayoutStyles>
     </ThemeProvider>
   );
 }

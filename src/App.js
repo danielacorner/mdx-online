@@ -9,9 +9,10 @@ import qs from "query-string";
 import Deck from "./components/Deck";
 import styled from "styled-components/macro";
 
-const defaultValue = `My Sweet Deck 😎🆒
+const defaultValue = `# My Sweet Deck
+## 😎✨🆒
 ---
-[Markdown Cheat Sheet](https://www.markdownguide.org/cheat-sheet/)
+Check out the [Markdown Cheat Sheet](https://www.markdownguide.org/cheat-sheet/)
 ---
 ![A random image](https://picsum.photos/250/500)`;
 const PROMPT_HEIGHT_EM = 5;
