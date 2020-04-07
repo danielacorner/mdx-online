@@ -32,7 +32,6 @@ export default function Deck({ isPreview }) {
 
   const indexFromHash = hash && hash.slice(1);
   const [slideIndex, setSlideIndex] = useState(Number(indexFromHash) || 0);
-  console.log("🌟🚨: Deck -> slideIndex", slideIndex);
 
   const stepBack = () => setSlideIndex(Math.max(0, slideIndex - 1));
   const stepForward = () =>
@@ -91,13 +90,32 @@ export default function Deck({ isPreview }) {
   );
 }
 
+const STYLE_START = "<style>";
+const STYLE_END = "</style>";
+
 function DeckWithSlides({ swipeHandlers, slides, slideIndex }) {
   return (
     <DeckStyles className="presentation-deck" {...swipeHandlers}>
-      {slides.map((slide, idx) => {
-        /* render all slides, then only show current */
-        const Slide = () => <Markdown>{slide}</Markdown>;
-        const isImageSlide = slide.includes("](") && slide.includes("![");
+      {slides.map((slideText, idx) => {
+        // render all slides, then only show current
+        const isImageSlide =
+          slideText.includes("](") && slideText.includes("![");
+
+        // add <style></style> at top of slide for custom css
+        const cssStartIndex = slideText.indexOf(STYLE_START);
+        const cssEndIndex = slideText.indexOf(STYLE_END);
+        const doesHaveCss = cssStartIndex !== -1;
+
+        const slideCustomCss = doesHaveCss
+          ? slideText.slice(
+              cssStartIndex + STYLE_START.length,
+              cssEndIndex - STYLE_END.length
+            )
+          : ``;
+        const slideTextWithoutCss = doesHaveCss
+          ? slideText.slice(slideCustomCss.length)
+          : slideText;
+        const Slide = () => <Markdown>{slideTextWithoutCss}</Markdown>;
         return (
           <SlideStyles
             key={idx}
@@ -123,6 +141,7 @@ function DeckWithSlides({ swipeHandlers, slides, slideIndex }) {
                   ? "width: 100%; height: 100%; display: grid; place-items: center;"
                   : ""}
               }
+              ${slideCustomCss}
             `}
           >
             <Slide />
