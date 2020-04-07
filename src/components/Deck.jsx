@@ -119,7 +119,9 @@ function DeckWithSlides({ swipeHandlers, slides, slideIndex }) {
                 max-height: 100%;
               }
               p {
-                ${isImageSlide ? "width: 100%; height: 100%;" : ""}
+                ${isImageSlide
+                  ? "width: 100%; height: 100%; display: grid; place-items: center;"
+                  : ""}
               }
             `}
           >
