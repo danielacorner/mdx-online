@@ -17,38 +17,15 @@ import { blue, indigo } from "@material-ui/core/colors";
 const theme = createMuiTheme({
   palette: {
     primary: blue,
-    secondary: indigo
-  }
+    secondary: indigo,
+  },
 });
-
-const CONTROLS_HEIGHT = 20;
 
 const AppStyles = styled.div`
   * {
     box-sizing: border-box;
   }
-min-height:100vh;
-  .controls {
-    /* position: relative;
-    height: ${CONTROLS_HEIGHT}px;
-    display: flex;
-    padding: 0.5em;
-    align-items: center;
-    justify-content: space-around; */
-  }
-
-  .themeSwitch {
-    z-index: 999;
-    position: fixed;
-    bottom: ${CONTROLS_HEIGHT}px;
-    left: ${CONTROLS_HEIGHT}px;
-    .dark {
-      color: white;
-    }
-    .light {
-      color: black;
-    }
-  }
+  min-height: 100vh;
 `;
 
 const ControlsStyles = styled.div`
@@ -100,7 +77,7 @@ export default function Layout({
   deckDataDecoded,
   handleBuild,
   isPresentationMode,
-  children
+  children,
 }) {
   const isPresentationPage = Boolean(setIsPresentationMode);
   const { pathname } = useLocation();
@@ -114,7 +91,7 @@ export default function Layout({
       deckDataDecoded && deckDataDecoded.length > 10
         ? `${deckDataDecoded.slice(0, 10)}...`
         : deckDataDecoded,
-    url: pathToShare
+    url: pathToShare,
   };
   const [, /* isCopied */ setCopied] = useCopyClipboard(pathToShare);
   const [copiedValue, setCopiedValue] = useState();
@@ -161,7 +138,7 @@ export default function Layout({
                   const deckElement = document.querySelector(
                     ".presentation-deck"
                   );
-                  deckElement.requestFullscreen().catch(err => {
+                  deckElement.requestFullscreen().catch((err) => {
                     alert(
                       `Error attempting to enable full-screen mode: ${err.message} (${err.name})`
                     );

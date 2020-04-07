@@ -9,7 +9,7 @@ import Layout from "./Layout";
 
 const SlideStyles = styled.div`
   height: 100vh;
-  width: 100vw;
+  width: 100%;
   background: hsla(0, 0%, 10%, 1);
   color: white;
   display: grid;
@@ -25,7 +25,7 @@ const DeckStyles = styled.div`
   }
 `;
 
-export default function Deck() {
+export default function Deck({ isPreview }) {
   const { deckData } = useParams();
   const history = useHistory();
   const { search, hash, pathname } = useLocation();
@@ -34,9 +34,12 @@ export default function Deck() {
   const deckDataDecoded = lzString.decompressFromEncodedURIComponent(
     deckDataEncoded
   );
+  console.log("🌟🚨: Deck -> deckDataDecoded", deckDataDecoded);
 
   const separators = ["---", "\\*\\*\\*"];
-  const slides = deckDataDecoded.split(new RegExp(separators.join("|"), "g"));
+  const slides = (deckDataDecoded || "").split(
+    new RegExp(separators.join("|"), "g")
+  );
 
   const indexFromHash = hash && hash.slice(1);
   const [slideIndex, setSlideIndex] = useState(Number(indexFromHash) || 0);
@@ -47,10 +50,12 @@ export default function Deck() {
 
   // sync the hash with the slide index
   useEffect(() => {
-    history.replace(`${pathname}#${slideIndex}`);
-  }, [slideIndex, pathname, history]);
+    history.replace(
+      `${isPreview ? "?" + deckDataFromLocation : pathname}#${slideIndex}`
+    );
+  }, [slideIndex, pathname, history, isPreview, deckDataFromLocation]);
 
-  const handleKeyDown = event => {
+  const handleKeyDown = (event) => {
     if (event.key === "ArrowRight") {
       stepForward();
     }
@@ -65,15 +70,21 @@ export default function Deck() {
 
   const swipeConfig = {
     trackMouse: true, // track mouse input
-    preventDefaultTouchmoveEvent: true
+    preventDefaultTouchmoveEvent: true,
   };
   const swipeHandlers = useSwipeable({
     onSwipedLeft: stepForward,
     onSwipedRight: stepBack,
-    ...swipeConfig
+    ...swipeConfig,
   });
 
-  return (
+  return isPreview ? (
+    <DeckStyles className="presentation-deck" {...swipeHandlers}>
+      <SlideStyles>
+        <Markdown>{slides[slideIndex]}</Markdown>
+      </SlideStyles>
+    </DeckStyles>
+  ) : (
     <Layout
       isPresentationMode={isPresentationMode}
       deckDataDecoded={deckDataDecoded}
