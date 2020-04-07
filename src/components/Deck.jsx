@@ -7,19 +7,7 @@ import { useHistory, useLocation, useParams } from "react-router";
 import lzString from "lz-string";
 import Layout from "./Layout";
 
-const SlideStyles = styled.div`
-  height: 100vh;
-  width: 100%;
-  background: hsla(0, 0%, 10%, 1);
-  color: white;
-  display: grid;
-  text-align: center;
-  place-items: center;
-  font-size: 2em;
-  font-family: "Sen", sans-serif;
-  user-select: none;
-  padding: 1em;
-`;
+const SlideStyles = styled.div``;
 
 const DeckStyles = styled.div`
   img {
@@ -36,7 +24,6 @@ export default function Deck({ isPreview }) {
   const deckDataDecoded = lzString.decompressFromEncodedURIComponent(
     deckDataEncoded
   );
-  console.log("🌟🚨: Deck -> deckDataDecoded", deckDataDecoded);
 
   const separators = ["---", "\\*\\*\\*"];
   const slides = (deckDataDecoded || "").split(
@@ -45,6 +32,7 @@ export default function Deck({ isPreview }) {
 
   const indexFromHash = hash && hash.slice(1);
   const [slideIndex, setSlideIndex] = useState(Number(indexFromHash) || 0);
+  console.log("🌟🚨: Deck -> slideIndex", slideIndex);
 
   const stepBack = () => setSlideIndex(Math.max(0, slideIndex - 1));
   const stepForward = () =>
@@ -81,11 +69,11 @@ export default function Deck({ isPreview }) {
   });
 
   return isPreview ? (
-    <DeckStyles className="presentation-deck" {...swipeHandlers}>
-      <SlideStyles>
-        <Markdown>{slides[slideIndex]}</Markdown>
-      </SlideStyles>
-    </DeckStyles>
+    <DeckWithSlides
+      swipeHandlers={swipeHandlers}
+      slides={slides}
+      slideIndex={slideIndex}
+    />
   ) : (
     <Layout
       isPresentationMode={isPresentationMode}
@@ -94,17 +82,51 @@ export default function Deck({ isPreview }) {
       setIsPresentationMode={setIsPresentationMode}
       handleBuild={null}
     >
-      <DeckStyles className="presentation-deck" {...swipeHandlers}>
-        {/* TODO: render all slides, then hide others */}
-        {slides.map((slide, idx) => (
+      <DeckWithSlides
+        swipeHandlers={swipeHandlers}
+        slides={slides}
+        slideIndex={slideIndex}
+      />{" "}
+    </Layout>
+  );
+}
+
+function DeckWithSlides({ swipeHandlers, slides, slideIndex }) {
+  return (
+    <DeckStyles className="presentation-deck" {...swipeHandlers}>
+      {slides.map((slide, idx) => {
+        /* render all slides, then only show current */
+        const Slide = () => <Markdown>{slide}</Markdown>;
+        const isImageSlide = slide.includes("](") && slide.includes("![");
+        return (
           <SlideStyles
             key={idx}
-            css={idx === slideIndex ? `` : `display: none;`}
+            isImageSlide={isImageSlide}
+            css={`
+              display: ${idx === slideIndex ? `grid` : `none`};
+              height: 100vh;
+              width: 100%;
+              background: hsla(0, 0%, 10%, 1);
+              color: white;
+              text-align: center;
+              place-items: center;
+              font-size: 2em;
+              font-family: "Sen", sans-serif;
+              user-select: none;
+              padding: 1em;
+              img {
+                max-width: 100%;
+                max-height: 100%;
+              }
+              p {
+                ${isImageSlide ? "width: 100%; height: 100%;" : ""}
+              }
+            `}
           >
-            <Markdown>{slide}</Markdown>
+            <Slide />
           </SlideStyles>
-        ))}
-      </DeckStyles>
-    </Layout>
+        );
+      })}
+    </DeckStyles>
   );
 }
