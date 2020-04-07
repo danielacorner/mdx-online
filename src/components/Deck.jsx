@@ -90,8 +90,8 @@ export default function Deck({ isPreview }) {
   );
 }
 
-const STYLE_START = "<style>";
-const STYLE_END = "</style>";
+const STYLE_START = "css{";
+const STYLE_END = "}css";
 
 function DeckWithSlides({ swipeHandlers, slides, slideIndex }) {
   return (
@@ -107,13 +107,13 @@ function DeckWithSlides({ swipeHandlers, slides, slideIndex }) {
         const doesHaveCss = cssStartIndex !== -1;
 
         const slideCustomCss = doesHaveCss
-          ? slideText.slice(
-              cssStartIndex + STYLE_START.length,
-              cssEndIndex - STYLE_END.length
-            )
+          ? slideText.slice(cssStartIndex + STYLE_START.length, cssEndIndex)
           : ``;
+        console.log("🌟🚨: DeckWithSlides -> slideCustomCss", slideCustomCss);
         const slideTextWithoutCss = doesHaveCss
-          ? slideText.slice(slideCustomCss.length)
+          ? slideText.slice(
+              STYLE_START.length + slideCustomCss.length + STYLE_END.length + 1
+            )
           : slideText;
         const Slide = () => <Markdown>{slideTextWithoutCss}</Markdown>;
         return (
