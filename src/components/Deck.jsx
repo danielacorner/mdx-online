@@ -133,7 +133,7 @@ function DeckWithSlides({ swipeHandlers, slides, slideIndex }) {
               user-select: none;
               padding: 1em;
               img {
-                max-width: 100%;
+                max-width: 1024px;
                 max-height: 100%;
               }
               p {
