@@ -116,6 +116,9 @@ function DeckWithSlides({ swipeHandlers, slides, slideIndex }) {
             )
           : slideText;
         const Slide = () => <Markdown>{slideTextWithoutCss}</Markdown>;
+
+        // TODO: split out images and render separately
+
         return (
           <SlideStyles
             key={idx}
@@ -135,10 +138,17 @@ function DeckWithSlides({ swipeHandlers, slides, slideIndex }) {
               img {
                 max-width: 1024px;
                 max-height: 100%;
+                min-height: 50vh;
               }
               p {
                 ${isImageSlide
-                  ? "width: 100%; height: 100%; display: grid; place-items: center;"
+                  ? `
+                  width: 100%;
+                  height: 100%;
+                  display: grid;
+                  place-items: center;
+                  align-content: center;
+                  `
                   : ""}
               }
               ${slideCustomCss}

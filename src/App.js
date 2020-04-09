@@ -30,7 +30,10 @@ export default () => {
   const deckDataDecoded = lzString.decompressFromEncodedURIComponent(deckData);
   const [value, setValue] = useState(deckDataDecoded || defaultValue);
 
+  // TODO: default preview to open on desktop (not working)
   const isDesktopOrLarger = useMediaQuery(`(min-width: 1000px)`);
+  // TODO: apply light theme to presentation too (store in url params)
+  // const isLightThemeInUrl = window.location.includes("theme=light")
   const [isLightTheme, setIsLightTheme] = useState(false);
   const [isPreviewVisible, setIsPreviewVisible] = useState(isDesktopOrLarger);
 
