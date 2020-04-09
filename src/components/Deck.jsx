@@ -90,6 +90,7 @@ export default function Deck({ isPreview }) {
   );
 }
 
+// TODO: use split, join, lastIndexOf to use css{ ;} instead of css{ }css
 const STYLE_START = "css{";
 const STYLE_END = "}css";
 
@@ -118,6 +119,7 @@ function DeckWithSlides({ swipeHandlers, slides, slideIndex }) {
         const Slide = () => <Markdown>{slideTextWithoutCss}</Markdown>;
 
         // TODO: split out images and render separately
+        // TODO: set image height/width based on max(container height, container width)
 
         return (
           <SlideStyles
