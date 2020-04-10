@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useHistory, useLocation, useParams } from "react-router";
 import lzString from "lz-string";
+import { defaultValue } from "./constants";
 
 // https://usehooks.com/useEventListener/
 const isWindowAvailable = typeof window !== `undefined`;
@@ -81,7 +82,7 @@ export function useDeck() {
 
   const indexFromHash = hash && hash.slice(1);
   const [slideIndex, setSlideIndex] = useState(Number(indexFromHash) || 0);
-  const slides = (deckDataDecoded || "").split(
+  const slides = (deckDataDecoded || defaultValue).split(
     new RegExp(separators.join("|"), "g")
   );
 

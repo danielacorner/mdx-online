@@ -1,6 +1,10 @@
-import React, { useEffect } from "react";
+import React from "react";
 import styled from "styled-components/macro";
-import { useEventListener, useDeck } from "../utils/customHooks";
+import {
+  useEventListener,
+  useDeck,
+  useSyncDeckWithHash,
+} from "../utils/customHooks";
 import { useSwipeable } from "react-swipeable";
 import Markdown from "markdown-to-jsx";
 import Layout from "./Layout";
@@ -17,11 +21,8 @@ export default function Deck({ isPreview }) {
   const {
     slides,
     slideIndex,
-    deckDataEncoded,
-    deckDataDecoded,
     stepBack,
     stepForward,
-    isPresentationMode,
     setIsPresentationMode,
   } = useDeck();
 
@@ -56,13 +57,7 @@ export default function Deck({ isPreview }) {
       slideIndex={slideIndex}
     />
   ) : (
-    <Layout
-      isPresentationMode={isPresentationMode}
-      deckDataDecoded={deckDataDecoded}
-      deckDataEncoded={deckDataEncoded}
-      setIsPresentationMode={setIsPresentationMode}
-      handleBuild={null}
-    >
+    <Layout setIsPresentationMode={setIsPresentationMode} handleBuild={null}>
       <DeckWithSlides
         swipeHandlers={swipeHandlers}
         slides={slides}
@@ -75,20 +70,6 @@ export default function Deck({ isPreview }) {
 // TODO: use split, join, lastIndexOf to use css{ ;} instead of css{ }css
 const STYLE_START = "css{";
 const STYLE_END = "}css";
-
-function useSyncDeckWithHash(
-  history,
-  isPreview,
-  deckDataFromLocation,
-  pathname,
-  slideIndex
-) {
-  useEffect(() => {
-    history.replace(
-      `${isPreview ? "?" + deckDataFromLocation : pathname}#${slideIndex}`
-    );
-  }, [slideIndex, pathname, history, isPreview, deckDataFromLocation]);
-}
 
 function DeckWithSlides({ swipeHandlers, slides, slideIndex }) {
   return (
@@ -106,7 +87,6 @@ function DeckWithSlides({ swipeHandlers, slides, slideIndex }) {
         const slideCustomCss = doesHaveCss
           ? slideText.slice(cssStartIndex + STYLE_START.length, cssEndIndex)
           : ``;
-        console.log("🌟🚨: DeckWithSlides -> slideCustomCss", slideCustomCss);
         const slideTextWithoutCss = doesHaveCss
           ? slideText.slice(
               STYLE_START.length + slideCustomCss.length + STYLE_END.length + 1
@@ -123,7 +103,7 @@ function DeckWithSlides({ swipeHandlers, slides, slideIndex }) {
             isImageSlide={isImageSlide}
             css={`
               display: ${idx === slideIndex ? `grid` : `none`};
-              height: 100vh;
+              height: 100%;
               width: 100%;
               background: hsla(0, 0%, 10%, 1);
               color: white;

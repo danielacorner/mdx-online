@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { ControlledEditor } from "@monaco-editor/react";
 import { Switch, useMediaQuery } from "@material-ui/core";
@@ -8,16 +8,10 @@ import Layout from "./components/Layout";
 import qs from "query-string";
 import Deck from "./components/Deck";
 import styled from "styled-components/macro";
+import { useDeck } from "./utils/customHooks";
+import { defaultValue } from "./utils/constants";
 
-const defaultValue = `# My Sweet Deck
-## 😎✨🆒
----
-Check out the [Markdown Cheat Sheet](https://www.markdownguide.org/cheat-sheet/)
----
-![A random image](https://picsum.photos/250/500)`;
 const PROMPT_HEIGHT_EM = 5;
-
-const CONTROLS_HEIGHT = 20;
 
 const EditorAndPreviewStyles = styled.div``;
 
@@ -26,16 +20,27 @@ const ControlsStyles = styled.div``;
 export default () => {
   const history = useHistory();
   const { search } = useLocation();
-  const deckData = search.slice(1);
-  const deckDataDecoded = lzString.decompressFromEncodedURIComponent(deckData);
+
+  const { deckDataDecoded } = useDeck();
+
   const [value, setValue] = useState(deckDataDecoded || defaultValue);
 
-  // TODO: default preview to open on desktop (not working)
-  const isDesktopOrLarger = useMediaQuery(`(min-width: 1000px)`);
+  const isTabletOrLarger = useMediaQuery(`(min-width: 768px)`);
   // TODO: apply light theme to presentation too (store in url params)
-  // const isLightThemeInUrl = window.location.includes("theme=light")
   const [isLightTheme, setIsLightTheme] = useState(false);
-  const [isPreviewVisible, setIsPreviewVisible] = useState(isDesktopOrLarger);
+  useEffect(() => {
+    const isLightThemeInUrl = search.includes("theme=light");
+    console.log("🌟🚨: isLightThemeInUrl", isLightThemeInUrl);
+    console.log("🌟🚨: isLightTheme", isLightTheme);
+    if (isLightTheme && !isLightThemeInUrl) {
+      history.push(`/?${search}`);
+    }
+    console.log("🌟🚨: search", search);
+  }, [isLightTheme, history, search]);
+
+  const [isPreviewVisible, setIsPreviewVisible] = useState(
+    window.innerWidth > 1000
+  );
 
   const query = qs.parse(search);
   if ("deck" in query) {
@@ -53,20 +58,14 @@ export default () => {
   };
 
   return (
-    <Layout
-      isPresentationMode={false}
-      deckDataDecoded={deckDataDecoded}
-      deckDataEncoded={deckData}
-      setIsPresentationMode={null}
-      handleBuild={handleBuild}
-    >
+    <Layout setIsPresentationMode={null} handleBuild={handleBuild}>
       <ControlsStyles
         className="controls"
         css={`
           z-index: 999;
           position: fixed;
-          bottom: ${CONTROLS_HEIGHT}px;
-          left: ${CONTROLS_HEIGHT}px;
+          bottom: 60px;
+          right: 20px;
           display: grid;
           .themeSwitch {
             .dark {
@@ -95,7 +94,12 @@ export default () => {
         css={`
           width: 100%;
           display: grid;
-          grid-template-columns: ${isPreviewVisible ? "50vw 50vw" : "1fr"};
+          grid-template-columns: ${isPreviewVisible && isTabletOrLarger
+            ? "50vw 50vw"
+            : "1fr"};
+          grid-template-rows: ${isPreviewVisible && !isTabletOrLarger
+            ? "50vh 50vh"
+            : "1fr"};
           .editor {
             width: 100%;
           }
@@ -117,7 +121,9 @@ export default () => {
           <ControlledEditor
             value={value}
             onChange={handleEditorChange}
-            height={`calc(100vh - ${PROMPT_HEIGHT_EM}em)`}
+            height={`calc(${
+              isPreviewVisible && !isTabletOrLarger ? 50 : 100
+            }vh - ${PROMPT_HEIGHT_EM}em)`}
             width={"100%"}
             language="markdown"
             theme={isLightTheme ? "light" : "dark"}

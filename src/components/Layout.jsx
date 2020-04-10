@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import { useCopyClipboard } from "@lokibai/react-use-copy-clipboard";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import { blue, indigo } from "@material-ui/core/colors";
+import { useDeck } from "../utils/customHooks";
 // import { CastButton } from "react-cast-sender";
 // import { useCastPlayer } from "react-cast-sender";
 
@@ -73,12 +74,10 @@ const ControlsStyles = styled.div`
 
 export default function Layout({
   setIsPresentationMode,
-  deckDataEncoded,
-  deckDataDecoded,
   handleBuild,
-  isPresentationMode,
   children,
 }) {
+  const { deckDataEncoded, deckDataDecoded } = useDeck();
   const isPresentationPage = Boolean(setIsPresentationMode);
   const { pathname } = useLocation();
   const { origin } = window.location;
@@ -148,23 +147,19 @@ export default function Layout({
               >
                 <FullScreenIcon style={{ transform: "scale(1.35)" }} />
               </Button>
-              {/* TODO: cast button */}
-              {/* <Button
-                variant="contained"
-                className="square"
-                onClick={handleCast}
-              >
-                <button is="google-cast-button"></button>
-              </Button> */}
             </>
           ) : (
             <Button variant="contained" color="primary" onClick={handleBuild}>
-              Build
+              Present
               <PlayIcon />
             </Button>
           )}
 
-          <Snackbar open={showSnackbar} autoHideDuration={3000}>
+          <Snackbar
+            style={{ marginBottom: "4em" }}
+            open={showSnackbar}
+            autoHideDuration={3000}
+          >
             <Alert severity="success">Copied to clipboard!</Alert>
           </Snackbar>
         </ControlsStyles>
@@ -180,39 +175,3 @@ async function handleShare(shareData) {
     alert(err);
   }
 }
-// function handleCast() {
-//   // eslint-disable-next-line no-undef
-//   const appId = chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID;
-//   // const appId = "336697D3";
-//   console.log(
-//     "🌟🚨: handleCast -> cast.framework.CastSession",
-//     // eslint-disable-next-line no-undef
-//     cast.framework.CastSession
-//   );
-//   // eslint-disable-next-line no-undef
-//   const castSessionReq = new chrome.cast.SessionRequest(appId);
-//   console.log("🌟🚨: handleCast -> castSessionReq", castSessionReq);
-
-//   // eslint-disable-next-line no-undef
-//   const castSession = cast.framework.CastContext.getInstance().getCurrentSession();
-//   console.log(castSession);
-
-//   // var mediaInfo = new chrome.cast.media.MediaInfo(currentMediaURL, contentType);
-//   // eslint-disable-next-line no-undef
-//   // console.log("🌟🚨: handleCast -> chrome", chrome);
-//   // const sessionId = "session123";
-//   // const appImages = [];
-//   // // eslint-disable-next-line no-undef
-//   // const castSession = new chrome.cast.Session(
-//   //   sessionId,
-//   //   appId,
-//   //   "MDX Online",
-//   //   appImages,
-//   //   null
-//   //   // (receiver: chrome.cast.Receiver)
-//   // );
-//   // castSession.sendMessage("test-namespace", "helloooo");
-//   // console.log("🌟🚨: handleCast -> castSession", castSession);
-//   // console.log("🌟🚨: initializeCastApi -> castSession", castSession);
-//   // castSession.sendMessage("test-namespace", "helloooo");
-// }
