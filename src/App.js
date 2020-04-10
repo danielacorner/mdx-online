@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 import { ControlledEditor } from "@monaco-editor/react";
 import { Switch, useMediaQuery } from "@material-ui/core";
@@ -9,7 +9,7 @@ import qs from "query-string";
 import Deck from "./components/Deck";
 import styled from "styled-components/macro";
 import { useDeck } from "./utils/customHooks";
-import { defaultValue } from "./utils/constants";
+import { defaultValue, THEMES, TRANSITION } from "./utils/constants";
 
 const PROMPT_HEIGHT_EM = 5;
 
@@ -26,39 +26,44 @@ export default () => {
   const [value, setValue] = useState(deckDataDecoded || defaultValue);
 
   const isTabletOrLarger = useMediaQuery(`(min-width: 768px)`);
-  // TODO: apply light theme to presentation too (store in url params)
-  const [isLightTheme, setIsLightTheme] = useState(false);
-  useEffect(() => {
-    const isLightThemeInUrl = search.includes("theme=light");
-    console.log("🌟🚨: isLightThemeInUrl", isLightThemeInUrl);
-    console.log("🌟🚨: isLightTheme", isLightTheme);
-    if (isLightTheme && !isLightThemeInUrl) {
-      history.push(`/?${search}`);
-    }
-    console.log("🌟🚨: search", search);
-  }, [isLightTheme, history, search]);
+
+  const query = qs.parse(search);
+
+  const isLightThemeInQuery = "t" in query && query.t === THEMES.LIGHT.QUERY;
+
+  const [isLightTheme, setIsLightTheme] = useState(isLightThemeInQuery);
 
   const [isPreviewVisible, setIsPreviewVisible] = useState(
     window.innerWidth > 1000
   );
 
-  const query = qs.parse(search);
-  if ("deck" in query) {
-    history.push(`/deck/${query.deck}`);
-  }
-
   const handleEditorChange = (ev, value) => {
     const compressed = lzString.compressToEncodedURIComponent(value);
-    history.push(`/?${compressed}`);
+    const query = qs.parse(search);
+    query.d = compressed;
+    const newHref = `/?${qs.stringify(query)}`;
+    history.replace(newHref);
     setValue(value);
   };
-  const handleBuild = () => {
-    const compressed = lzString.compressToEncodedURIComponent(value);
-    history.push(`/deck/${compressed}`);
+
+  const handleThemeChange = (ev, value) => {
+    const newIsLightTheme = !isLightTheme;
+    setIsLightTheme(newIsLightTheme);
+
+    if (newIsLightTheme && !isLightThemeInQuery) {
+      query.t = THEMES.LIGHT.QUERY;
+      history.replace(`/?${qs.stringify(query)}`);
+    } else if (!newIsLightTheme && isLightThemeInQuery) {
+      delete query.t;
+      history.replace(`/?${qs.stringify(query)}`);
+    }
   };
 
   return (
-    <Layout setIsPresentationMode={null} handleBuild={handleBuild}>
+    <Layout
+      isPresentationPage={false}
+      pathToDeck={`/deck/?${qs.stringify(query)}`}
+    >
       <ControlsStyles
         className="controls"
         css={`
@@ -82,11 +87,14 @@ export default () => {
       >
         <div className="layoutSwitch">
           <span className="preview">Preview</span>{" "}
-          <Switch onChange={() => setIsPreviewVisible(!isPreviewVisible)} />
+          <Switch
+            checked={isPreviewVisible}
+            onChange={() => setIsPreviewVisible(!isPreviewVisible)}
+          />
         </div>
         <div className="themeSwitch">
           <span className="dark">Dark</span>{" "}
-          <Switch onChange={() => setIsLightTheme(!isLightTheme)} />{" "}
+          <Switch onChange={handleThemeChange} />{" "}
           <span className="light">Light</span>
         </div>
       </ControlsStyles>
@@ -102,6 +110,11 @@ export default () => {
             : "1fr"};
           .editor {
             width: 100%;
+          }
+          .monaco-editor {
+            * {
+              transition: ${TRANSITION};
+            }
           }
         `}
         className="editorAndPreview"

@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { useHistory, useLocation, useParams } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import lzString from "lz-string";
-import { defaultValue } from "./constants";
+import { defaultValue, THEMES } from "./constants";
+import { useSwipeable } from "react-swipeable";
+import qs from "query-string";
 
 // https://usehooks.com/useEventListener/
 const isWindowAvailable = typeof window !== `undefined`;
@@ -58,21 +60,18 @@ export function usePrevious(value) {
   return ref.current;
 }
 
-export function useSyncDeckWithHash(isPreview, slideIndex) {
+export function useSyncDeckWithHash(slideIndex) {
   const { search, pathname } = useLocation();
-  const deckDataFromLocation = search.slice(1);
   const history = useHistory();
-
   useEffect(() => {
-    history.replace(
-      `${isPreview ? "?" + deckDataFromLocation : pathname}#${slideIndex}`
-    );
-  }, [slideIndex, pathname, history, isPreview, deckDataFromLocation]);
+    history.replace(`${pathname + search}#${slideIndex}`);
+  }, [slideIndex, pathname, search, history]);
 }
 
 export function useDeck() {
-  const { deckData } = useParams();
   const { search, hash } = useLocation();
+  const query = qs.parse(search);
+  const deckData = query.d;
   const deckDataFromLocation = search.slice(1);
   const deckDataEncoded = deckData || deckDataFromLocation;
   const deckDataDecoded = lzString.decompressFromEncodedURIComponent(
@@ -103,3 +102,46 @@ export function useDeck() {
     setIsPresentationMode,
   };
 }
+
+export function useChangeSlidesOnKeydownOrMousewheel({
+  stepForward,
+  stepBack,
+}) {
+  const handleKeyDown = (event) => {
+    if (["ArrowRight", "ArrowDown"].includes(event.key)) {
+      stepForward();
+    }
+    if (["ArrowLeft", "ArrowUp"].includes(event.key)) {
+      stepBack();
+    }
+  };
+  useEventListener("keydown", handleKeyDown);
+
+  const handleMouseWheel = (event) => {
+    if (event.deltaY > 0) {
+      stepForward();
+    }
+    if (event.deltaY < 0) {
+      stepBack();
+    }
+  };
+  useEventListener("wheel", handleMouseWheel);
+}
+
+export function useChangeSlidesOnSwipe({ stepForward, stepBack }) {
+  const swipeConfig = {
+    trackMouse: true, // track mouse input
+    preventDefaultTouchmoveEvent: true,
+  };
+  return useSwipeable({
+    onSwipedLeft: stepForward,
+    onSwipedRight: stepBack,
+    ...swipeConfig,
+  });
+}
+
+export const useTheme = () => {
+  const location = useLocation();
+  const isLightTheme = location.search.includes("t=l");
+  return isLightTheme ? THEMES.LIGHT.STYLES : THEMES.DARK.STYLES;
+};

@@ -1,77 +1,49 @@
 import React from "react";
 import styled from "styled-components/macro";
 import {
-  useEventListener,
   useDeck,
   useSyncDeckWithHash,
+  useChangeSlidesOnKeydownOrMousewheel,
+  useChangeSlidesOnSwipe,
+  useTheme,
 } from "../utils/customHooks";
-import { useSwipeable } from "react-swipeable";
+import { STYLE_START, STYLE_END, TRANSITION } from "../utils/constants";
 import Markdown from "markdown-to-jsx";
-import Layout from "./Layout";
 
 const SlideStyles = styled.div``;
 
 const DeckStyles = styled.div`
+  height: 100%;
   img {
     /* TODO: size images to fit screen */
   }
 `;
 
-export default function Deck({ isPreview }) {
-  const {
-    slides,
-    slideIndex,
-    stepBack,
-    stepForward,
-    setIsPresentationMode,
-  } = useDeck();
+export default function Deck() {
+  const { slides, slideIndex, stepBack, stepForward } = useDeck();
 
   // sync the hash with the slide index
-  useSyncDeckWithHash(isPreview, slideIndex);
+  useSyncDeckWithHash(slideIndex);
 
-  const handleKeyDown = (event) => {
-    if (event.key === "ArrowRight") {
-      stepForward();
-    }
-    if (event.key === "ArrowLeft") {
-      stepBack();
-    }
-  };
+  // change slides on arrow up, down, left, right
+  useChangeSlidesOnKeydownOrMousewheel({ stepForward, stepBack });
 
-  useEventListener("keydown", handleKeyDown);
+  // change slides on swipe left, right
+  const swipeHandlers = useChangeSlidesOnSwipe({ stepForward, stepBack });
 
-  const swipeConfig = {
-    trackMouse: true, // track mouse input
-    preventDefaultTouchmoveEvent: true,
-  };
-  const swipeHandlers = useSwipeable({
-    onSwipedLeft: stepForward,
-    onSwipedRight: stepBack,
-    ...swipeConfig,
-  });
-
-  return isPreview ? (
-    <DeckWithSlides
+  return (
+    <DeckContent
       swipeHandlers={swipeHandlers}
       slides={slides}
       slideIndex={slideIndex}
     />
-  ) : (
-    <Layout setIsPresentationMode={setIsPresentationMode} handleBuild={null}>
-      <DeckWithSlides
-        swipeHandlers={swipeHandlers}
-        slides={slides}
-        slideIndex={slideIndex}
-      />
-    </Layout>
   );
 }
 
 // TODO: use split, join, lastIndexOf to use css{ ;} instead of css{ }css
-const STYLE_START = "css{";
-const STYLE_END = "}css";
 
-function DeckWithSlides({ swipeHandlers, slides, slideIndex }) {
+function DeckContent({ swipeHandlers, slides, slideIndex }) {
+  const { color, background } = useTheme();
   return (
     <DeckStyles className="presentation-deck" {...swipeHandlers}>
       {slides.map((slideText, idx) => {
@@ -105,8 +77,9 @@ function DeckWithSlides({ swipeHandlers, slides, slideIndex }) {
               display: ${idx === slideIndex ? `grid` : `none`};
               height: 100%;
               width: 100%;
-              background: hsla(0, 0%, 10%, 1);
-              color: white;
+              transition: ${TRANSITION};
+              background: ${background};
+              color: ${color};
               text-align: center;
               place-items: center;
               font-size: 2em;

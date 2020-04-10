@@ -12,6 +12,7 @@ import { useCopyClipboard } from "@lokibai/react-use-copy-clipboard";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import { blue, indigo } from "@material-ui/core/colors";
 import { useDeck } from "../utils/customHooks";
+import { blackColor } from "../utils/constants";
 // import { CastButton } from "react-cast-sender";
 // import { useCastPlayer } from "react-cast-sender";
 
@@ -26,7 +27,9 @@ const LayoutStyles = styled.div`
   * {
     box-sizing: border-box;
   }
+  display: grid;
   min-height: 100vh;
+  background: ${blackColor};
 `;
 
 const ControlsStyles = styled.div`
@@ -72,18 +75,13 @@ const ControlsStyles = styled.div`
   }
 `;
 
-export default function Layout({
-  setIsPresentationMode,
-  handleBuild,
-  children,
-}) {
+export default function Layout({ isPresentationPage, pathToDeck, children }) {
   const { deckDataEncoded, deckDataDecoded } = useDeck();
-  const isPresentationPage = Boolean(setIsPresentationMode);
-  const { pathname } = useLocation();
+  const { pathname, search, hash } = useLocation();
   const { origin } = window.location;
   const pathToShare = `${origin}/?deck=${deckDataEncoded}`;
 
-  const pathBackToEdit = "/?" + pathname.split("/")[2];
+  const pathBackToEdit = "/" + pathname.split("/")[2] + search + hash;
   const shareData = {
     title: "MDX slides online",
     text:
@@ -142,17 +140,18 @@ export default function Layout({
                       `Error attempting to enable full-screen mode: ${err.message} (${err.name})`
                     );
                   });
-                  setIsPresentationMode(true);
                 }}
               >
                 <FullScreenIcon style={{ transform: "scale(1.35)" }} />
               </Button>
             </>
           ) : (
-            <Button variant="contained" color="primary" onClick={handleBuild}>
-              Present
-              <PlayIcon />
-            </Button>
+            <Link to={pathToDeck}>
+              <Button variant="contained" color="primary">
+                Present
+                <PlayIcon />
+              </Button>
+            </Link>
           )}
 
           <Snackbar
