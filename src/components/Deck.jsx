@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components/macro";
-import { useEventListener } from "../utils/customHooks";
+import { useEventListener, useDeck } from "../utils/customHooks";
 import { useSwipeable } from "react-swipeable";
 import Markdown from "markdown-to-jsx";
-import { useHistory, useLocation, useParams } from "react-router";
-import lzString from "lz-string";
 import Layout from "./Layout";
 
 const SlideStyles = styled.div``;
@@ -16,33 +14,19 @@ const DeckStyles = styled.div`
 `;
 
 export default function Deck({ isPreview }) {
-  const { deckData } = useParams();
-  const history = useHistory();
-  const { search, hash, pathname } = useLocation();
-  const deckDataFromLocation = search.slice(1);
-  const deckDataEncoded = deckData || deckDataFromLocation;
-  const deckDataDecoded = lzString.decompressFromEncodedURIComponent(
-    deckDataEncoded
-  );
-
-  const separators = ["---", "\\*\\*\\*"];
-  const slides = (deckDataDecoded || "").split(
-    new RegExp(separators.join("|"), "g")
-  );
-
-  const indexFromHash = hash && hash.slice(1);
-  const [slideIndex, setSlideIndex] = useState(Number(indexFromHash) || 0);
-
-  const stepBack = () => setSlideIndex(Math.max(0, slideIndex - 1));
-  const stepForward = () =>
-    setSlideIndex(Math.min(slides.length - 1, slideIndex + 1));
+  const {
+    slides,
+    slideIndex,
+    deckDataEncoded,
+    deckDataDecoded,
+    stepBack,
+    stepForward,
+    isPresentationMode,
+    setIsPresentationMode,
+  } = useDeck();
 
   // sync the hash with the slide index
-  useEffect(() => {
-    history.replace(
-      `${isPreview ? "?" + deckDataFromLocation : pathname}#${slideIndex}`
-    );
-  }, [slideIndex, pathname, history, isPreview, deckDataFromLocation]);
+  useSyncDeckWithHash(isPreview, slideIndex);
 
   const handleKeyDown = (event) => {
     if (event.key === "ArrowRight") {
@@ -54,8 +38,6 @@ export default function Deck({ isPreview }) {
   };
 
   useEventListener("keydown", handleKeyDown);
-
-  const [isPresentationMode, setIsPresentationMode] = useState(false);
 
   const swipeConfig = {
     trackMouse: true, // track mouse input
@@ -85,7 +67,7 @@ export default function Deck({ isPreview }) {
         swipeHandlers={swipeHandlers}
         slides={slides}
         slideIndex={slideIndex}
-      />{" "}
+      />
     </Layout>
   );
 }
@@ -93,6 +75,20 @@ export default function Deck({ isPreview }) {
 // TODO: use split, join, lastIndexOf to use css{ ;} instead of css{ }css
 const STYLE_START = "css{";
 const STYLE_END = "}css";
+
+function useSyncDeckWithHash(
+  history,
+  isPreview,
+  deckDataFromLocation,
+  pathname,
+  slideIndex
+) {
+  useEffect(() => {
+    history.replace(
+      `${isPreview ? "?" + deckDataFromLocation : pathname}#${slideIndex}`
+    );
+  }, [slideIndex, pathname, history, isPreview, deckDataFromLocation]);
+}
 
 function DeckWithSlides({ swipeHandlers, slides, slideIndex }) {
   return (
