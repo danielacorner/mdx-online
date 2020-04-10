@@ -26,3 +26,8 @@ const transitionProperties = ["background", "background-color", "color"];
 export const TRANSITION = transitionProperties
   .map((prop) => `${prop} 0.6s cubic-bezier(0.075, 0.82, 0.165, 1)`)
   .join(",");
+
+export const BREAKPOINTS = {
+  DESKTOP: 1200,
+  TABLET: 960,
+};

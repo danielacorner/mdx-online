@@ -8,10 +8,17 @@ import Layout from "./components/Layout";
 import qs from "query-string";
 import Deck from "./components/Deck";
 import styled from "styled-components/macro";
-import { useDeck } from "./utils/customHooks";
-import { defaultValue, THEMES, TRANSITION } from "./utils/constants";
+import { useDeck, useWindowSize } from "./utils/customHooks";
+import {
+  defaultValue,
+  THEMES,
+  TRANSITION,
+  BREAKPOINTS,
+} from "./utils/constants";
+import ReactMde from "react-mde";
+import "react-mde/lib/styles/css/react-mde-all.css";
 
-const PROMPT_HEIGHT_EM = 5;
+const PROMPT_HEIGHT_PX = 80;
 
 const EditorAndPreviewStyles = styled.div``;
 
@@ -25,7 +32,9 @@ export default () => {
 
   const [value, setValue] = useState(deckDataDecoded || defaultValue);
 
-  const isTabletOrLarger = useMediaQuery(`(min-width: 768px)`);
+  const isTabletOrLarger = useMediaQuery(
+    `(min-width: ${BREAKPOINTS.TABLET}px)`
+  );
 
   const query = qs.parse(search);
 
@@ -34,7 +43,7 @@ export default () => {
   const [isLightTheme, setIsLightTheme] = useState(isLightThemeInQuery);
 
   const [isPreviewVisible, setIsPreviewVisible] = useState(
-    window.innerWidth > 1000
+    window.innerWidth > BREAKPOINTS.DESKTOP
   );
 
   const handleEditorChange = (ev, value) => {
@@ -59,6 +68,7 @@ export default () => {
     }
   };
 
+  const windowSize = useWindowSize();
   return (
     <Layout
       isPresentationPage={false}
@@ -69,8 +79,8 @@ export default () => {
         css={`
           z-index: 999;
           position: fixed;
-          bottom: 60px;
-          right: 20px;
+          top: ${windowSize.height - (isTabletOrLarger ? 90 : 140)}px;
+          left: ${isTabletOrLarger ? 30 : windowSize.width - 160}px;
           display: grid;
           .themeSwitch {
             .dark {
@@ -110,10 +120,37 @@ export default () => {
             : "1fr"};
           .editor {
             width: 100%;
+            max-width: 100vw;
           }
           .monaco-editor {
             * {
               transition: ${TRANSITION};
+            }
+          }
+          .react-mde {
+            * {
+              transition: ${TRANSITION};
+            }
+            display: flex;
+            flex-direction: column;
+            border: none;
+            border-bottom: 1px solid #c8ccd0;
+            height: calc(100% - ${PROMPT_HEIGHT_PX}px);
+            & > div:not(.mde-header),
+            .mde-textarea-wrapper,
+            .mde-text,
+            textarea {
+              height: 100% !important;
+            }
+            .grip {
+              display: none;
+            }
+            textarea,
+            .mde-header,
+            .mde-header * {
+              background: ${THEMES[isLightTheme ? "LIGHT" : "DARK"].STYLES
+                .background};
+              color: ${THEMES[isLightTheme ? "LIGHT" : "DARK"].STYLES.color};
             }
           }
         `}
@@ -122,26 +159,32 @@ export default () => {
         <div className="editor">
           <div style={{ pointerEvents: "none" }}>
             <ControlledEditor
-              height={`${PROMPT_HEIGHT_EM}em`}
+              height={PROMPT_HEIGHT_PX}
               width={"100%"}
               language="markdown"
               value={`
   <!-- type your slides, in Markdown, separated by "---" -->
   `}
+              theme={isLightTheme ? "light" : "dark"}
               options={{ lineNumbers: "off", wordWrap: "on" }}
             />
           </div>
-          <ControlledEditor
-            value={value}
-            onChange={handleEditorChange}
-            height={`calc(${
-              isPreviewVisible && !isTabletOrLarger ? 50 : 100
-            }vh - ${PROMPT_HEIGHT_EM}em)`}
-            width={"100%"}
-            language="markdown"
-            theme={isLightTheme ? "light" : "dark"}
-            options={{ wordWrap: "on" }}
-          />
+          {/* for touch devices, can't use monaco */}
+          {!isTabletOrLarger ? (
+            <ReactMde value={value} onChange={handleEditorChange} />
+          ) : (
+            <ControlledEditor
+              value={value}
+              onChange={handleEditorChange}
+              height={`calc(${
+                isPreviewVisible && !isTabletOrLarger ? 50 : 100
+              }vh - ${PROMPT_HEIGHT_PX}px)`}
+              width={"100%"}
+              language="markdown"
+              theme={isLightTheme ? "light" : "dark"}
+              options={{ wordWrap: "on" }}
+            />
+          )}
         </div>
         {isPreviewVisible && <Deck isPreview={true} />}
       </EditorAndPreviewStyles>

@@ -29,6 +29,7 @@ const LayoutStyles = styled.div`
   }
   display: grid;
   min-height: 100vh;
+  max-height: 100vh;
   background: ${blackColor};
 `;
 

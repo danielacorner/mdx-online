@@ -14,6 +14,8 @@ const SlideStyles = styled.div``;
 
 const DeckStyles = styled.div`
   height: 100%;
+  width: 100%;
+  max-width: 100vw;
   img {
     /* TODO: size images to fit screen */
   }
