@@ -35,7 +35,7 @@ const LayoutStyles = styled.div`
 
 const ControlsStyles = styled.div`
   position: fixed;
-  bottom: 1em;
+  top: calc(100vh - 3.4em);
   right: 1em;
   height: 36.5px;
   display: grid;
@@ -103,7 +103,6 @@ export default function Layout({ isPresentationPage, pathToDeck, children }) {
         <ControlsStyles>
           {Boolean("share" in navigator) ? (
             <Button variant="contained" onClick={() => handleShare(shareData)}>
-              Share
               <ShareIcon />
             </Button>
           ) : (
