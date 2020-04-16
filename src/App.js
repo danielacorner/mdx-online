@@ -171,7 +171,10 @@ export default () => {
           </div>
           {/* for touch devices, can't use monaco */}
           {!isTabletOrLarger ? (
-            <ReactMde value={value} onChange={handleEditorChange} />
+            <ReactMde
+              value={value}
+              onChange={(newValue) => handleEditorChange(null, newValue)}
+            />
           ) : (
             <ControlledEditor
               value={value}
