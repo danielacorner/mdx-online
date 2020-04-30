@@ -96,72 +96,22 @@ export default function Layout({ isPresentationPage, pathToDeck, children }) {
   const isCopiedValueSameAsCurrentValue = copiedValue === pathToShare;
   const showSnackbar = copiedValue && isCopiedValueSameAsCurrentValue;
 
+  const controlsProps = {
+    shareData,
+    showSnackbar,
+    setCopied,
+    pathToShare,
+    setCopiedValue,
+    isPresentationPage,
+    pathBackToEdit,
+    pathToDeck,
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <LayoutStyles>
         {children}
-        <ControlsStyles>
-          {Boolean("share" in navigator) ? (
-            <Button variant="contained" onClick={() => handleShare(shareData)}>
-              <ShareIcon />
-            </Button>
-          ) : (
-            <Button
-              variant="contained"
-              className={`${showSnackbar ? "copied" : ""}`}
-              onClick={() => {
-                setCopied(pathToShare);
-                setCopiedValue(pathToShare);
-                setTimeout(() => setCopiedValue(null), 2500);
-              }}
-            >
-              Share
-              <FileCopyIcon />
-            </Button>
-          )}
-          {isPresentationPage ? (
-            <>
-              <Link to={pathBackToEdit}>
-                <Button variant="contained" color="secondary">
-                  <PlayIcon className="editIcon" />
-                  Edit
-                </Button>
-              </Link>
-              <Button
-                className="square"
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  const deckElement = document.querySelector(
-                    ".presentation-deck"
-                  );
-                  deckElement.requestFullscreen().catch((err) => {
-                    alert(
-                      `Error attempting to enable full-screen mode: ${err.message} (${err.name})`
-                    );
-                  });
-                }}
-              >
-                <FullScreenIcon style={{ transform: "scale(1.35)" }} />
-              </Button>
-            </>
-          ) : (
-            <Link to={pathToDeck}>
-              <Button variant="contained" color="primary">
-                Present
-                <PlayIcon />
-              </Button>
-            </Link>
-          )}
-
-          <Snackbar
-            style={{ marginBottom: "4em" }}
-            open={showSnackbar}
-            autoHideDuration={3000}
-          >
-            <Alert severity="success">Copied to clipboard!</Alert>
-          </Snackbar>
-        </ControlsStyles>
+        <Controls {...controlsProps} />
       </LayoutStyles>
     </ThemeProvider>
   );
@@ -173,4 +123,78 @@ async function handleShare(shareData) {
   } catch (err) {
     alert(err);
   }
+}
+
+function Controls({
+  shareData,
+  showSnackbar,
+  setCopied,
+  pathToShare,
+  setCopiedValue,
+  isPresentationPage,
+  pathBackToEdit,
+  pathToDeck,
+}) {
+  return (
+    <ControlsStyles>
+      {Boolean("share" in navigator) ? (
+        <Button variant="contained" onClick={() => handleShare(shareData)}>
+          <ShareIcon />
+        </Button>
+      ) : (
+        <Button
+          variant="contained"
+          className={`${showSnackbar ? "copied" : ""}`}
+          onClick={() => {
+            setCopied(pathToShare);
+            setCopiedValue(pathToShare);
+            setTimeout(() => setCopiedValue(null), 2500);
+          }}
+        >
+          Share
+          <FileCopyIcon />
+        </Button>
+      )}
+      {isPresentationPage ? (
+        <>
+          <Link to={pathBackToEdit}>
+            <Button variant="contained" color="secondary">
+              <PlayIcon className="editIcon" />
+              Edit
+            </Button>
+          </Link>
+          <Button
+            className="square"
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              const deckElement = document.querySelector(".presentation-deck");
+              deckElement.requestFullscreen().catch((err) => {
+                alert(
+                  `Error attempting to enable full-screen mode: ${err.message} (${err.name})`
+                );
+              });
+            }}
+          >
+            <FullScreenIcon style={{ transform: "scale(1.35)" }} />
+          </Button>
+        </>
+      ) : (
+        <Link to={pathToDeck}>
+          <Button variant="contained" color="primary">
+            Present
+            <PlayIcon />
+          </Button>
+        </Link>
+      )}
+
+      <Snackbar
+        style={{ marginBottom: "4em" }}
+        open={showSnackbar}
+        autoHideDuration={3000}
+      >
+        <Alert severity="success">Copied to clipboard!</Alert>
+      </Snackbar>
+    </ControlsStyles>
+  );
 }
