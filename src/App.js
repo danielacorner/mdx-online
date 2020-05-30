@@ -26,7 +26,7 @@ const ControlsStyles = styled.div``;
 
 const App = () => {
   const history = useHistory();
-  const { search } = useLocation();
+  const { search, hash } = useLocation();
   // const location = useLocation();
   // const search = location.search
 
@@ -73,12 +73,11 @@ const App = () => {
       history.replace(`/?${qs.stringify(query)}`);
     }
   };
-
   const windowSize = useWindowSize();
   return (
     <Layout
       isPresentationPage={false}
-      pathToDeck={`/deck/?${qs.stringify(query)}`}
+      pathToDeck={`/deck/?${qs.stringify(query)}${hash}`}
     >
       <ControlsStyles
         className="controls"
