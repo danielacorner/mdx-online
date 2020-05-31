@@ -7,7 +7,12 @@ import {
   useChangeSlidesOnSwipe,
   useTheme,
 } from "../utils/customHooks";
-import { STYLE_START, STYLE_END, TRANSITION } from "../utils/constants";
+import {
+  STYLE_START,
+  STYLE_END,
+  TRANSITION,
+  BREAKPOINTS,
+} from "../utils/constants";
 import Markdown from "markdown-to-jsx";
 
 const SlideStyles = styled.div``;
@@ -42,12 +47,19 @@ export default function Deck() {
   );
 }
 
-// TODO: use split, join, lastIndexOf to use css{ ;} instead of css{ }css
-
 function DeckContent({ swipeHandlers, slides, slideIndex }) {
   const { color, background } = useTheme();
   return (
-    <DeckStyles className="presentation-deck" {...swipeHandlers}>
+    <DeckStyles
+      className="presentation-deck"
+      {...swipeHandlers}
+      css={`
+        font-size: 0.6em;
+        @media (min-width: ${BREAKPOINTS.TABLET}px) {
+          font-size: 1em;
+        }
+      `}
+    >
       {slides.map((slideText, idx) => {
         // render all slides, then only show current
         const isImageSlide =
@@ -79,6 +91,9 @@ function DeckContent({ swipeHandlers, slides, slideIndex }) {
               display: ${idx === slideIndex ? `grid` : `none`};
               height: 100%;
               width: 100%;
+              & > div {
+                max-width: 100vw;
+              }
               transition: ${TRANSITION};
               background: ${background};
               color: ${color};
@@ -87,11 +102,11 @@ function DeckContent({ swipeHandlers, slides, slideIndex }) {
               font-size: 2em;
               font-family: "Sen", sans-serif;
               user-select: none;
-              padding: 1em;
+              padding: 0.5em 0;
               img {
-                max-width: 1024px;
-                max-height: 100%;
-                min-height: 50vh;
+                max-width: min(95vw, 1024px);
+                height: auto;
+                max-height: min(95vh, 100%);
               }
               p {
                 ${isImageSlide
