@@ -5,7 +5,7 @@ import { Switch, useMediaQuery } from "@material-ui/core";
 import { useHistory, useLocation } from "react-router-dom";
 import lzString from "lz-string";
 import Layout from "./components/Layout";
-import qs from "query-string";
+import queryString from "query-string";
 import Deck from "./components/Deck";
 import styled from "styled-components/macro";
 import { useDeck, useWindowSize } from "./utils/customHooks";
@@ -36,7 +36,7 @@ export default () => {
     `(min-width: ${BREAKPOINTS.TABLET}px)`
   );
 
-  const query = qs.parse(search);
+  const query = queryString.parse(search);
 
   const isLightThemeInQuery = "t" in query && query.t === THEMES.LIGHT.QUERY;
 
@@ -48,9 +48,9 @@ export default () => {
 
   const handleEditorChange = (ev, value) => {
     const compressed = lzString.compressToEncodedURIComponent(value);
-    const query = qs.parse(search);
+    const query = queryString.parse(search);
     query.d = compressed;
-    const newHref = `/?${qs.stringify(query)}`;
+    const newHref = `/?${queryString.stringify(query)}`;
     history.replace(newHref);
     setValue(value);
   };
@@ -58,21 +58,14 @@ export default () => {
   const handleThemeChange = (ev, value) => {
     const newIsLightTheme = !isLightTheme;
     setIsLightTheme(newIsLightTheme);
-
-    if (newIsLightTheme && !isLightThemeInQuery) {
-      query.t = THEMES.LIGHT.QUERY;
-      history.replace(`/?${qs.stringify(query)}`);
-    } else if (!newIsLightTheme && isLightThemeInQuery) {
-      delete query.t;
-      history.replace(`/?${qs.stringify(query)}`);
-    }
+    changeThemeInUrl(newIsLightTheme, isLightThemeInQuery, query, history);
   };
 
   const windowSize = useWindowSize();
   return (
     <Layout
       isPresentationPage={false}
-      pathToDeck={`/deck/?${qs.stringify(query)}`}
+      pathToDeck={`/deck/?${queryString.stringify(query)}`}
     >
       <ControlsStyles
         className="controls"
@@ -194,3 +187,18 @@ export default () => {
     </Layout>
   );
 };
+
+function changeThemeInUrl(
+  newIsLightTheme,
+  isLightThemeInQuery,
+  query,
+  history
+) {
+  if (newIsLightTheme && !isLightThemeInQuery) {
+    query.t = THEMES.LIGHT.QUERY;
+    history.replace(`/?${queryString.stringify(query)}`);
+  } else if (!newIsLightTheme && isLightThemeInQuery) {
+    delete query.t;
+    history.replace(`/?${queryString.stringify(query)}`);
+  }
+}

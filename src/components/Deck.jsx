@@ -42,7 +42,7 @@ export default function Deck() {
   );
 }
 
-// TODO: use split, join, lastIndexOf to use css{ ;} instead of css{ }css
+const MAX_EXTRA_CHARACTERS_ON_SINGLE_IMAGE_SLIDE = 4;
 
 function DeckContent({ swipeHandlers, slides, slideIndex }) {
   const { color, background } = useTheme();
@@ -50,8 +50,13 @@ function DeckContent({ swipeHandlers, slides, slideIndex }) {
     <DeckStyles className="presentation-deck" {...swipeHandlers}>
       {slides.map((slideText, idx) => {
         // render all slides, then only show current
-        const isImageSlide =
-          slideText.includes("](") && slideText.includes("![");
+        const isSingleImageSlide =
+          slideText.includes("](") &&
+          slideText.includes("![") &&
+          // no more than a couple characters on either side of the image link
+          // for a full-page image slide
+          slideText.length - slideText.indexOf(")") <=
+            MAX_EXTRA_CHARACTERS_ON_SINGLE_IMAGE_SLIDE;
 
         // add <style></style> at top of slide for custom css
         const cssStartIndex = slideText.indexOf(STYLE_START);
@@ -66,15 +71,57 @@ function DeckContent({ swipeHandlers, slides, slideIndex }) {
               STYLE_START.length + slideCustomCss.length + STYLE_END.length + 1
             )
           : slideText;
-        const Slide = () => <Markdown>{slideTextWithoutCss}</Markdown>;
 
-        // TODO: split out images and render separately
-        // TODO: set image height/width based on max(container height, container width)
+        const imageSplit = slideText.split("(");
+        const imageUrl = imageSplit?.[1]?.slice(
+          0,
+          imageSplit?.[1]?.indexOf(")")
+        );
+        const imageLabel = imageSplit?.[0]?.slice(
+          imageSplit?.[0]?.indexOf("[") + 1,
+          imageSplit?.[0]?.indexOf("]")
+        );
+
+        const Slide = () => (
+          <Markdown
+            {...(!isSingleImageSlide
+              ? {}
+              : {
+                  options: {
+                    overrides: {
+                      p: {
+                        component: "div",
+                        props: {
+                          ariaLabel: imageLabel,
+                          style: {
+                            backgroundImage: `url(${imageUrl})`,
+                            backgroundRepeat: "no-repeat",
+                            backgroundSize: "contain",
+                            width: "100%",
+                            height: "100%",
+                            backgroundPosition: "center",
+                          },
+                        },
+                      },
+                      img: {
+                        props: {
+                          style: {
+                            display: `none`,
+                          },
+                        },
+                      },
+                    },
+                  },
+                })}
+          >
+            {slideTextWithoutCss}
+          </Markdown>
+        );
 
         return (
           <SlideStyles
             key={idx}
-            isImageSlide={isImageSlide}
+            isImageSlide={isSingleImageSlide}
             css={`
               display: ${idx === slideIndex ? `grid` : `none`};
               height: 100%;
@@ -92,17 +139,6 @@ function DeckContent({ swipeHandlers, slides, slideIndex }) {
                 max-width: 1024px;
                 max-height: 100%;
                 min-height: 50vh;
-              }
-              p {
-                ${isImageSlide
-                  ? `
-                  width: 100%;
-                  height: 100%;
-                  display: grid;
-                  place-items: center;
-                  align-content: center;
-                  `
-                  : ""}
               }
               ${slideCustomCss}
             `}
