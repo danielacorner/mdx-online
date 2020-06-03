@@ -76,6 +76,10 @@ const ControlsStyles = styled.div`
   }
 `;
 
+/**
+ * Layout gives the children a specific layout!
+ * @param isPresentationPage controls whether it's full-screen
+ */
 export default function Layout({ isPresentationPage, pathToDeck, children }) {
   const { deckDataEncoded, deckDataDecoded } = useDeck();
   const { pathname, search, hash } = useLocation();
@@ -137,6 +141,7 @@ function Controls({
 }) {
   return (
     <ControlsStyles>
+      {/* does navigator contain the share api */}
       {Boolean("share" in navigator) ? (
         <Button variant="contained" onClick={() => handleShare(shareData)}>
           <ShareIcon />

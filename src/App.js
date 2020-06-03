@@ -24,13 +24,17 @@ const EditorAndPreviewStyles = styled.div``;
 
 const ControlsStyles = styled.div``;
 
-export default () => {
+const App = () => {
   const history = useHistory();
-  const { search } = useLocation();
+  const { search, hash } = useLocation();
+  // const location = useLocation();
+  // const search = location.search
 
   const { deckDataDecoded } = useDeck();
 
-  const [value, setValue] = useState(deckDataDecoded || defaultValue);
+  const [editorValue, setEditorValue] = useState(
+    deckDataDecoded || defaultValue
+  );
 
   const isTabletOrLarger = useMediaQuery(
     `(min-width: ${BREAKPOINTS.TABLET}px)`
@@ -52,7 +56,7 @@ export default () => {
     query.d = compressed;
     const newHref = `/?${queryString.stringify(query)}`;
     history.replace(newHref);
-    setValue(value);
+    setEditorValue(value);
   };
 
   const handleThemeChange = (ev, value) => {
@@ -60,12 +64,11 @@ export default () => {
     setIsLightTheme(newIsLightTheme);
     changeThemeInUrl(newIsLightTheme, isLightThemeInQuery, query, history);
   };
-
   const windowSize = useWindowSize();
   return (
     <Layout
       isPresentationPage={false}
-      pathToDeck={`/deck/?${queryString.stringify(query)}`}
+      pathToDeck={`/deck/?${qs.stringify(query)}${hash}`}
     >
       <ControlsStyles
         className="controls"
@@ -165,12 +168,12 @@ export default () => {
           {/* for touch devices, can't use monaco */}
           {!isTabletOrLarger ? (
             <ReactMde
-              value={value}
+              value={editorValue}
               onChange={(newValue) => handleEditorChange(null, newValue)}
             />
           ) : (
             <ControlledEditor
-              value={value}
+              value={editorValue}
               onChange={handleEditorChange}
               height={`calc(${
                 isPreviewVisible && !isTabletOrLarger ? 50 : 100
