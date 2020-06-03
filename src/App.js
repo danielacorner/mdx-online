@@ -24,7 +24,7 @@ const EditorAndPreviewStyles = styled.div``;
 
 const ControlsStyles = styled.div``;
 
-const App = () => {
+export default function App() {
   const history = useHistory();
   const { search, hash } = useLocation();
   // const location = useLocation();
@@ -189,7 +189,7 @@ const App = () => {
       </EditorAndPreviewStyles>
     </Layout>
   );
-};
+}
 
 function changeThemeInUrl(
   newIsLightTheme,
