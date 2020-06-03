@@ -68,7 +68,7 @@ export default function App() {
   return (
     <Layout
       isPresentationPage={false}
-      pathToDeck={`/deck/?${qs.stringify(query)}${hash}`}
+      pathToDeck={`/deck/?${queryString.stringify(query)}${hash}`}
     >
       <ControlsStyles
         className="controls"
