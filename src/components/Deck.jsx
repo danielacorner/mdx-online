@@ -206,6 +206,9 @@ function DeckContent({ swipeHandlers, slides, slideIndex }) {
                 height: auto;
                 max-height: min(95vh, 100%);
               }
+              a {
+                color: hsl(240, 100%, 59%);
+              }
               ${slideCustomCss}
             `}
           >
