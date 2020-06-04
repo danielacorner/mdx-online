@@ -158,6 +158,18 @@ function DeckContent({ swipeHandlers, slides, slideIndex }) {
                           </div>
                         ),
                       },
+                      p: {
+                        component: "div",
+                        props: {
+                          style: {
+                            // default "p" styles
+                            marginBlockStart: "1em",
+                            marginBlockEnd: "1em",
+                            marginInlineStart: "0px",
+                            marginInlineEnd: "0px",
+                          },
+                        },
+                      },
                     },
                   },
                 }
