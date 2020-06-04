@@ -1,6 +1,6 @@
 {
-  "name": "mdx-28",
-  "version": "0.1.0",
+  "name": "mdx-online",
+  "version": "0.2.0",
   "private": true,
   "dependencies": {
     "@lokibai/react-use-copy-clipboard": "^1.0.5",
