@@ -47,7 +47,7 @@ export default function Deck() {
   );
 }
 
-const MAX_EXTRA_CHARACTERS_ON_SINGLE_IMAGE_SLIDE = 4;
+const MAX_EXTRA_CHARACTERS_ON_SINGLE_IMAGE_SLIDE = 2;
 
 function DeckContent({ swipeHandlers, slides, slideIndex }) {
   const { color, background } = useTheme();
@@ -64,12 +64,20 @@ function DeckContent({ swipeHandlers, slides, slideIndex }) {
     >
       {slides.map((slideText, idx) => {
         // render all slides, then only show current
-        const isSingleImageSlide =
-          slideText.includes("](") &&
-          slideText.includes("![") &&
+        const isOneOrMoreImageInSlide =
+          slideText.includes("](") && slideText.includes("![");
+
+        const imageTextLength =
+          slideText.lastIndexOf(")") - slideText.lastIndexOf("![");
+        const numCharsOtherThanImageText = Math.abs(
+          imageTextLength - slideText.length
+        );
+
+        const isSingleImageSlideNoText =
+          isOneOrMoreImageInSlide &&
           // no more than a couple characters on either side of the image link
           // for a full-page image slide
-          slideText.length - slideText.indexOf(")") <=
+          numCharsOtherThanImageText <=
             MAX_EXTRA_CHARACTERS_ON_SINGLE_IMAGE_SLIDE;
 
         // add <style></style> at top of slide for custom css
@@ -98,15 +106,14 @@ function DeckContent({ swipeHandlers, slides, slideIndex }) {
 
         const Slide = () => (
           <Markdown
-            {...(!isSingleImageSlide
-              ? {}
-              : {
+            {...(isSingleImageSlideNoText
+              ? {
                   options: {
                     overrides: {
                       p: {
                         component: "div",
                         props: {
-                          ariaLabel: imageLabel,
+                          "aria-label": imageLabel,
                           style: {
                             backgroundImage: `url(${imageUrl})`,
                             backgroundRepeat: "no-repeat",
@@ -126,7 +133,35 @@ function DeckContent({ swipeHandlers, slides, slideIndex }) {
                       },
                     },
                   },
-                })}
+                }
+              : isOneOrMoreImageInSlide
+              ? {
+                  options: {
+                    overrides: {
+                      img: {
+                        component: () => (
+                          <div
+                            style={{
+                              backgroundImage: `url(${imageUrl})`,
+                              backgroundRepeat: "no-repeat",
+                              backgroundSize: "contain",
+                              width: "100%",
+                              height: "100%",
+                              backgroundPosition: "center",
+                            }}
+                          >
+                            <img
+                              src={imageUrl}
+                              alt={imageLabel}
+                              style={{ visibility: "hidden" }}
+                            />
+                          </div>
+                        ),
+                      },
+                    },
+                  },
+                }
+              : {})}
           >
             {slideTextWithoutCss}
           </Markdown>
@@ -135,7 +170,7 @@ function DeckContent({ swipeHandlers, slides, slideIndex }) {
         return (
           <SlideStyles
             key={idx}
-            isImageSlide={isSingleImageSlide}
+            isImageSlide={isSingleImageSlideNoText}
             css={`
               display: ${idx === slideIndex ? `grid` : `none`};
               height: 100%;
