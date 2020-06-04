@@ -67,8 +67,15 @@ function DeckContent({ swipeHandlers, slides, slideIndex }) {
         const isOneOrMoreImageInSlide =
           slideText.includes("](") && slideText.includes("![");
 
-        const imageTextLength =
-          slideText.lastIndexOf(")") - slideText.lastIndexOf("![");
+        const firstImageText = !isOneOrMoreImageInSlide
+          ? ""
+          : slideText.slice(
+              slideText.indexOf("!["),
+              slideText.lastIndexOf(")") + 1
+            );
+
+        const imageTextLength = firstImageText.length;
+
         const numCharsOtherThanImageText = Math.abs(
           imageTextLength - slideText.length
         );
@@ -94,16 +101,6 @@ function DeckContent({ swipeHandlers, slides, slideIndex }) {
             )
           : slideText;
 
-        const imageSplit = slideText.split("(");
-        const imageUrl = imageSplit?.[1]?.slice(
-          0,
-          imageSplit?.[1]?.indexOf(")")
-        );
-        const imageLabel = imageSplit?.[0]?.slice(
-          imageSplit?.[0]?.indexOf("[") + 1,
-          imageSplit?.[0]?.indexOf("]")
-        );
-
         const Slide = () => (
           <Markdown
             {...(isSingleImageSlideNoText
@@ -111,17 +108,22 @@ function DeckContent({ swipeHandlers, slides, slideIndex }) {
                   options: {
                     overrides: {
                       p: {
-                        component: "div",
-                        props: {
-                          "aria-label": imageLabel,
-                          style: {
-                            backgroundImage: `url(${imageUrl})`,
-                            backgroundRepeat: "no-repeat",
-                            backgroundSize: "contain",
-                            width: "100%",
-                            height: "100%",
-                            backgroundPosition: "center",
-                          },
+                        component: (props) => {
+                          const imgChild = props.children[0];
+                          return (
+                            <div
+                              style={{
+                                backgroundImage: `url(${imgChild.props.src})`,
+                                backgroundRepeat: "no-repeat",
+                                backgroundSize: "contain",
+                                width: "100%",
+                                height: "100%",
+                                backgroundPosition: "center",
+                              }}
+                            >
+                              {props.children}
+                            </div>
+                          );
                         },
                       },
                       img: {
@@ -139,10 +141,10 @@ function DeckContent({ swipeHandlers, slides, slideIndex }) {
                   options: {
                     overrides: {
                       img: {
-                        component: () => (
+                        component: (props) => (
                           <div
                             style={{
-                              backgroundImage: `url(${imageUrl})`,
+                              backgroundImage: `url(${props.src})`,
                               backgroundRepeat: "no-repeat",
                               backgroundSize: "contain",
                               width: "100%",
@@ -151,8 +153,8 @@ function DeckContent({ swipeHandlers, slides, slideIndex }) {
                             }}
                           >
                             <img
-                              src={imageUrl}
-                              alt={imageLabel}
+                              src={props.src}
+                              alt={props.alt}
                               style={{ visibility: "hidden" }}
                             />
                           </div>
