@@ -24,11 +24,12 @@ const EditorAndPreviewStyles = styled.div``;
 
 const ControlsStyles = styled.div``;
 
+const TOPMOST_EDITOR_OPTIONS = { lineNumbers: "off", wordWrap: "on" };
+const EDITOR_OPTIONS = { wordWrap: "on" };
+
 export default function App() {
-  const history = useHistory();
+  const { replace: replaceHistory } = useHistory();
   const { search, hash } = useLocation();
-  // const location = useLocation();
-  // const search = location.search
 
   const { deckDataDecoded } = useDeck();
 
@@ -55,16 +56,24 @@ export default function App() {
     const query = queryString.parse(search);
     query.d = compressed;
     const newHref = `/?${queryString.stringify(query)}`;
-    history.replace(newHref);
+    console.count("REPLACING");
+    replaceHistory(newHref);
     setEditorValue(value);
   };
 
-  const handleThemeChange = (ev, value) => {
+  const handleThemeChange = () => {
     const newIsLightTheme = !isLightTheme;
     setIsLightTheme(newIsLightTheme);
-    changeThemeInUrl(newIsLightTheme, isLightThemeInQuery, query, history);
+    changeThemeInUrl(
+      newIsLightTheme,
+      isLightThemeInQuery,
+      query,
+      replaceHistory
+    );
   };
   const windowSize = useWindowSize();
+  const togglePreview = () => setIsPreviewVisible((prev) => !prev);
+
   return (
     <Layout
       isPresentationPage={false}
@@ -93,10 +102,7 @@ export default function App() {
       >
         <div className="layoutSwitch">
           <span className="preview">Preview</span>{" "}
-          <Switch
-            checked={isPreviewVisible}
-            onChange={() => setIsPreviewVisible(!isPreviewVisible)}
-          />
+          <Switch checked={isPreviewVisible} onChange={togglePreview} />
         </div>
         <div className="themeSwitch">
           <span className="dark">Dark</span>{" "}
@@ -162,7 +168,7 @@ export default function App() {
   <!-- type your slides, in Markdown, separated by "---" -->
   `}
               theme={isLightTheme ? "light" : "dark"}
-              options={{ lineNumbers: "off", wordWrap: "on" }}
+              options={TOPMOST_EDITOR_OPTIONS}
             />
           </div>
           {/* for touch devices, can't use monaco */}
@@ -181,11 +187,11 @@ export default function App() {
               width={"100%"}
               language="markdown"
               theme={isLightTheme ? "light" : "dark"}
-              options={{ wordWrap: "on" }}
+              options={EDITOR_OPTIONS}
             />
           )}
         </div>
-        {isPreviewVisible && <Deck isPreview={true} />}
+        {isPreviewVisible && <Deck />}
       </EditorAndPreviewStyles>
     </Layout>
   );
@@ -195,13 +201,13 @@ function changeThemeInUrl(
   newIsLightTheme,
   isLightThemeInQuery,
   query,
-  history
+  replaceHistory
 ) {
   if (newIsLightTheme && !isLightThemeInQuery) {
     query.t = THEMES.LIGHT.QUERY;
-    history.replace(`/?${queryString.stringify(query)}`);
+    replaceHistory(`/?${queryString.stringify(query)}`);
   } else if (!newIsLightTheme && isLightThemeInQuery) {
     delete query.t;
-    history.replace(`/?${queryString.stringify(query)}`);
+    replaceHistory(`/?${queryString.stringify(query)}`);
   }
 }

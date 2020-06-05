@@ -62,27 +62,30 @@ export function usePrevious(value) {
 
 export function useSyncDeckWithHash(slideIndex) {
   const { search, pathname } = useLocation();
-  const history = useHistory();
+  const { replace } = useHistory();
+  const prevSlideIndex = usePrevious(slideIndex);
   useEffect(() => {
-    history.replace(`${pathname + search}#${slideIndex}`);
-  }, [slideIndex, pathname, search, history]);
+    if (slideIndex !== prevSlideIndex) {
+      console.count("replacing history");
+      replace(`${pathname + search}#${slideIndex}`);
+    }
+  }, [slideIndex, pathname, search, replace, prevSlideIndex]);
 }
+
+const SEPARATORS = ["---", "\\*\\*\\*"];
 
 export function useDeck() {
   const { search, hash } = useLocation();
-  const query = qs.parse(search);
-  const deckData = query.d;
-  const deckDataFromLocation = search.slice(1);
-  const deckDataEncoded = deckData || deckDataFromLocation;
+  const { d: deckData } = qs.parse(search);
+  const deckDataEncoded = deckData || search.slice(1);
   const deckDataDecoded = lzString.decompressFromEncodedURIComponent(
     deckDataEncoded
   );
-  const separators = ["---", "\\*\\*\\*"];
 
-  const indexFromHash = hash && hash.slice(1);
+  const indexFromHash = hash?.slice(1);
   const [slideIndex, setSlideIndex] = useState(Number(indexFromHash) || 0);
   const slides = (deckDataDecoded || defaultValue).split(
-    new RegExp(separators.join("|"), "g")
+    new RegExp(SEPARATORS.join("|"), "g")
   );
 
   const stepBack = () => setSlideIndex(Math.max(0, slideIndex - 1));
