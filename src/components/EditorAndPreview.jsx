@@ -102,7 +102,7 @@ export default function EditorAndPreview({ isPreviewVisible, isLightTheme }) {
     const { range } = ev.changes[0];
     lastPositionRef.current = {
       lineNumber: range.endLineNumber,
-      column: range.startColumn,
+      column: range.endColumn + 1,
     };
     // save the value
     editorValueRef.current = value;
@@ -120,7 +120,7 @@ export default function EditorAndPreview({ isPreviewVisible, isLightTheme }) {
 
   const [editorKey, setEditorKey] = useState(Math.random());
 
-  // reload the editor every N seconds to clear its history & free up memory
+  // reload the editor every N minutes to clear its history & free up memory
   useEffect(() => {
     const intervalId = setInterval(() => {
       setEditorKey(Math.random());
@@ -160,12 +160,7 @@ export default function EditorAndPreview({ isPreviewVisible, isLightTheme }) {
           />
         </div>
         {/* for touch devices, can't use monaco */}
-        {!isTabletOrLarger ? (
-          <ReactMde
-            value={editorValue}
-            onChange={(newValue) => handleEditorChange(newValue)}
-          />
-        ) : (
+        {isTabletOrLarger ? (
           <ControlledEditor
             value={editorValue}
             onChange={handleEditorChange}
@@ -177,6 +172,11 @@ export default function EditorAndPreview({ isPreviewVisible, isLightTheme }) {
             language="markdown"
             theme={isLightTheme ? "light" : "dark"}
             options={EDITOR_OPTIONS}
+          />
+        ) : (
+          <ReactMde
+            value={editorValue}
+            onChange={(newValue) => handleEditorChange(newValue)}
           />
         )}
       </div>

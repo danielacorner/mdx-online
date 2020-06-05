@@ -7,15 +7,8 @@ import {
   useChangeSlidesOnSwipe,
   useTheme,
 } from "../utils/customHooks";
-import {
-  STYLE_START,
-  STYLE_END,
-  TRANSITION,
-  BREAKPOINTS,
-} from "../utils/constants";
-import Markdown from "markdown-to-jsx";
-
-const SlideStyles = styled.div``;
+import { STYLE_START, STYLE_END, BREAKPOINTS } from "../utils/constants";
+import Slide from "./Slide";
 
 const DeckStyles = styled.div`
   height: 100%;
@@ -89,130 +82,19 @@ export default function Deck() {
           : slideText;
 
         return (
-          <SlideStyles
+          <Slide
             key={idx}
-            isImageSlide={isSingleImageSlideNoText}
-            css={`
-              display: ${idx === slideIndex ? `grid` : `none`};
-              height: 100%;
-              width: 100%;
-              & > div {
-                max-width: 100vw;
-              }
-              transition: ${TRANSITION};
-              background: ${background};
-              color: ${color};
-              text-align: center;
-              place-items: center;
-              font-size: 2em;
-              font-family: "Sen", sans-serif;
-              user-select: none;
-              padding: 0.5em 0;
-              img {
-                max-width: min(95vw, 1024px);
-                height: auto;
-                max-height: min(95vh, 100%);
-              }
-              a {
-                color: hsl(240, 100%, 59%);
-              }
-              ${slideCustomCss}
-            `}
-          >
-            <Slide
-              isSingleImageSlideNoText={isSingleImageSlideNoText}
-              isOneOrMoreImageInSlide={isOneOrMoreImageInSlide}
-              slideTextWithoutCss={slideTextWithoutCss}
-            />
-          </SlideStyles>
+            isOneOrMoreImageInSlide={isOneOrMoreImageInSlide}
+            isSingleImageSlideNoText={isSingleImageSlideNoText}
+            slideCustomCss={slideCustomCss}
+            slideTextWithoutCss={slideTextWithoutCss}
+            slideIndex={slideIndex}
+            color={color}
+            background={background}
+            idx={idx}
+          />
         );
       })}
     </DeckStyles>
-  );
-}
-
-function Slide({
-  isSingleImageSlideNoText,
-  isOneOrMoreImageInSlide,
-  slideTextWithoutCss,
-}) {
-  return (
-    <Markdown
-      {...(isSingleImageSlideNoText
-        ? {
-            options: {
-              overrides: {
-                p: {
-                  component: (props) => {
-                    const imgChild = props.children[0];
-                    return (
-                      <div
-                        style={{
-                          backgroundImage: `url(${imgChild.props.src})`,
-                          backgroundRepeat: "no-repeat",
-                          backgroundSize: "contain",
-                          width: "100%",
-                          height: "100%",
-                          backgroundPosition: "center",
-                        }}
-                      >
-                        {props.children}
-                      </div>
-                    );
-                  },
-                },
-                img: {
-                  props: {
-                    style: {
-                      display: `none`,
-                    },
-                  },
-                },
-              },
-            },
-          }
-        : isOneOrMoreImageInSlide
-        ? {
-            options: {
-              overrides: {
-                img: {
-                  component: (props) => (
-                    <div
-                      style={{
-                        backgroundImage: `url(${props.src})`,
-                        backgroundRepeat: "no-repeat",
-                        backgroundSize: "contain",
-                        width: "100%",
-                        height: "100%",
-                        backgroundPosition: "center",
-                      }}
-                    >
-                      <img
-                        src={props.src}
-                        alt={props.alt}
-                        style={{ visibility: "hidden" }}
-                      />
-                    </div>
-                  ),
-                },
-                p: {
-                  component: "div",
-                  props: {
-                    style: {
-                      // default "p" styles
-                      marginBlockStart: "1em",
-                      marginBlockEnd: "1em",
-                      marginInlineStart: "0px",
-                      marginInlineEnd: "0px",
-                    },
-                  },
-                },
-              },
-            },
-          }
-        : {})}
-    >
-      {slideTextWithoutCss}
-    </Markdown>
   );
 }
