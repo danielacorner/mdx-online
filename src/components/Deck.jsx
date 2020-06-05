@@ -23,6 +23,8 @@ const DeckStyles = styled.div`
   max-width: 100vw;
 `;
 
+const MAX_EXTRA_CHARACTERS_ON_SINGLE_IMAGE_SLIDE = 2;
+
 export default function Deck() {
   const { slides, slideIndex, stepBack, stepForward } = useDeck();
 
@@ -35,18 +37,6 @@ export default function Deck() {
   // change slides on swipe left, right
   const swipeHandlers = useChangeSlidesOnSwipe({ stepForward, stepBack });
 
-  return (
-    <DeckContent
-      swipeHandlers={swipeHandlers}
-      slides={slides}
-      slideIndex={slideIndex}
-    />
-  );
-}
-
-const MAX_EXTRA_CHARACTERS_ON_SINGLE_IMAGE_SLIDE = 2;
-
-function DeckContent({ swipeHandlers, slides, slideIndex }) {
   const { color, background } = useTheme();
   return (
     <DeckStyles

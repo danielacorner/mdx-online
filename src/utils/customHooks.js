@@ -66,7 +66,6 @@ export function useSyncDeckWithHash(slideIndex) {
   const prevSlideIndex = usePrevious(slideIndex);
   useEffect(() => {
     if (slideIndex !== prevSlideIndex) {
-      console.count("replacing history");
       replace(`${pathname + search}#${slideIndex}`);
     }
   }, [slideIndex, pathname, search, replace, prevSlideIndex]);
@@ -161,13 +160,13 @@ export function useWindowSize() {
 
   const [windowSize, setWindowSize] = useState(getSize);
 
+  function handleResize() {
+    setWindowSize(getSize());
+  }
+
   useEffect(() => {
     if (!isClient) {
-      return false;
-    }
-
-    function handleResize() {
-      setWindowSize(getSize());
+      return;
     }
 
     window.addEventListener("resize", handleResize);
