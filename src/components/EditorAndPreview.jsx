@@ -20,7 +20,7 @@ const TOPMOST_EDITOR_OPTIONS = { lineNumbers: "off", wordWrap: "on" };
 const EDITOR_OPTIONS = { wordWrap: "on" };
 
 const PROMPT_HEIGHT_PX = 80;
-const UPDATE_HISTORY_INTERVAL = 1 * 1000;
+// const UPDATE_HISTORY_INTERVAL = 1 * 1000;
 const RELOAD_EDITOR_INTERVAL = 60 * 1000;
 
 const EditorAndPreviewStyles = styled.div`
@@ -78,25 +78,25 @@ export default function EditorAndPreview({ isPreviewVisible, isLightTheme }) {
   const query = queryString.parse(search);
 
   const editorValueRef = useRef();
-  const queryRef = useRef();
+  // const queryRef = useRef();
   const lastPositionRef = useRef({ lineNumber: 0, column: 0 });
 
   // update the url every N seconds
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      const compressed = lzString.compressToEncodedURIComponent(
-        editorValueRef.current
-      );
-      if (queryRef.current) {
-        queryRef.current.d = compressed;
-        const newHref = `/?${queryString.stringify(queryRef.current)}`;
-        replaceHistory(newHref);
-      }
-    }, UPDATE_HISTORY_INTERVAL);
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [replaceHistory]);
+  // useEffect(() => {
+  //   const intervalId = setInterval(() => {
+  //     const compressed = lzString.compressToEncodedURIComponent(
+  //       editorValueRef.current
+  //     );
+  //     if (queryRef.current) {
+  //       queryRef.current.d = compressed;
+  //       const newHref = `/?${queryString.stringify(queryRef.current)}`;
+  //       replaceHistory(newHref);
+  //     }
+  //   }, UPDATE_HISTORY_INTERVAL);
+  //   return () => {
+  //     clearInterval(intervalId);
+  //   };
+  // }, [replaceHistory]);
 
   const handleEditorChange = (ev, value) => {
     const { range } = ev.changes[0];
@@ -106,8 +106,13 @@ export default function EditorAndPreview({ isPreviewVisible, isLightTheme }) {
     };
     // save the value
     editorValueRef.current = value;
-    // save the query
-    queryRef.current = query;
+    // update the query instantly
+    const compressed = lzString.compressToEncodedURIComponent(
+      editorValueRef.current
+    );
+    query.d = compressed;
+    const newHref = `/?${queryString.stringify(query)}`;
+    replaceHistory(newHref);
     setEditorValue(value);
   };
 
@@ -116,6 +121,10 @@ export default function EditorAndPreview({ isPreviewVisible, isLightTheme }) {
     setTimeout(() => {
       monaco.focus();
     });
+  };
+
+  const handleClick = (event) => {
+    // TODO: can we get the position on click from monaco?
   };
 
   const [editorKey, setEditorKey] = useState(Math.random());
@@ -136,7 +145,6 @@ export default function EditorAndPreview({ isPreviewVisible, isLightTheme }) {
   const STYLES = THEMES[isLightTheme ? "LIGHT" : "DARK"].STYLES;
   return (
     <EditorAndPreviewStyles
-      key={editorKey}
       STYLES={STYLES}
       isPreviewVisible={isPreviewVisible}
       isTabletOrLarger={isTabletOrLarger}
@@ -162,6 +170,8 @@ export default function EditorAndPreview({ isPreviewVisible, isLightTheme }) {
         {/* for touch devices, can't use monaco */}
         {isTabletOrLarger ? (
           <ControlledEditor
+            onClick={handleClick}
+            key={editorKey}
             value={editorValue}
             onChange={handleEditorChange}
             editorDidMount={editorDidMount}
