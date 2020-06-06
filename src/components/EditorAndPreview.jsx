@@ -21,7 +21,7 @@ const EDITOR_OPTIONS = { wordWrap: "on" };
 
 const PROMPT_HEIGHT_PX = 80;
 // const UPDATE_HISTORY_INTERVAL = 1 * 1000;
-const RELOAD_EDITOR_INTERVAL = 60 * 1000;
+const RELOAD_EDITOR_INTERVAL = 5 * 60 * 1000;
 
 const EditorAndPreviewStyles = styled.div`
   width: 100%;
@@ -78,8 +78,10 @@ export default function EditorAndPreview({ isPreviewVisible, isLightTheme }) {
   const query = queryString.parse(search);
 
   const editorValueRef = useRef();
+  const didClickMoreRecentlyThanTypeRef = useRef(false);
   // const queryRef = useRef();
   const lastPositionRef = useRef({ lineNumber: 0, column: 0 });
+  const lastScrollPositionRef = useRef({ scrollTop: 0 });
 
   // update the url every N seconds
   // useEffect(() => {
@@ -99,6 +101,11 @@ export default function EditorAndPreview({ isPreviewVisible, isLightTheme }) {
   // }, [replaceHistory]);
 
   const handleEditorChange = (ev, value) => {
+    lastScrollPositionRef.current = {
+      scrollTop: monacoRef.current.getScrollTop(),
+    };
+
+    didClickMoreRecentlyThanTypeRef.current = false;
     const { range } = ev.changes[0];
     lastPositionRef.current = {
       lineNumber: range.endLineNumber,
@@ -116,15 +123,23 @@ export default function EditorAndPreview({ isPreviewVisible, isLightTheme }) {
     setEditorValue(value);
   };
 
+  const monacoRef = useRef();
   const editorDidMount = (getEditorValue, monaco) => {
+    monacoRef.current = monaco;
     monaco.setPosition(lastPositionRef.current);
     setTimeout(() => {
+      monaco.setScrollPosition(lastScrollPositionRef.current);
       monaco.focus();
     });
   };
 
   const handleClick = (event) => {
+    didClickMoreRecentlyThanTypeRef.current = true;
+    lastScrollPositionRef.current = {
+      scrollTop: monacoRef.current.getScrollTop(),
+    };
     // TODO: can we get the position on click from monaco?
+    // https://microsoft.github.io/monaco-editor/api/interfaces/monaco.editor.istandalonecodeeditor.html
   };
 
   const [editorKey, setEditorKey] = useState(Math.random());
@@ -132,7 +147,11 @@ export default function EditorAndPreview({ isPreviewVisible, isLightTheme }) {
   // reload the editor every N minutes to clear its history & free up memory
   useEffect(() => {
     const intervalId = setInterval(() => {
-      setEditorKey(Math.random());
+      // editor click position isn't saved, only when typing,
+      // so only reload if we typed last
+      if (!didClickMoreRecentlyThanTypeRef.current) {
+        setEditorKey(Math.random());
+      }
     }, RELOAD_EDITOR_INTERVAL);
     return () => {
       clearInterval(intervalId);
@@ -169,20 +188,21 @@ export default function EditorAndPreview({ isPreviewVisible, isLightTheme }) {
         </div>
         {/* for touch devices, can't use monaco */}
         {isTabletOrLarger ? (
-          <ControlledEditor
-            onClick={handleClick}
-            key={editorKey}
-            value={editorValue}
-            onChange={handleEditorChange}
-            editorDidMount={editorDidMount}
-            height={`calc(${
-              isPreviewVisible && !isTabletOrLarger ? 50 : 100
-            }vh - ${PROMPT_HEIGHT_PX}px)`}
-            width={"100%"}
-            language="markdown"
-            theme={isLightTheme ? "light" : "dark"}
-            options={EDITOR_OPTIONS}
-          />
+          <div className="clickListener" onClick={handleClick}>
+            <ControlledEditor
+              key={editorKey}
+              value={editorValue}
+              onChange={handleEditorChange}
+              editorDidMount={editorDidMount}
+              height={`calc(${
+                isPreviewVisible && !isTabletOrLarger ? 50 : 100
+              }vh - ${PROMPT_HEIGHT_PX}px)`}
+              width={"100%"}
+              language="markdown"
+              theme={isLightTheme ? "light" : "dark"}
+              options={EDITOR_OPTIONS}
+            />
+          </div>
         ) : (
           <ReactMde
             value={editorValue}

@@ -12,18 +12,17 @@
   </body>
   <script>
     // https://developers.google.com/cast/docs/chrome_sender/integrate
-    window["__onGCastApiAvailable"] = function(isAvailable) {
+    window["__onGCastApiAvailable"] = function (isAvailable) {
       if (isAvailable) {
         initializeCastApi();
       }
     };
-    initializeCastApi = function() {
+    initializeCastApi = function () {
       cast.framework.CastContext.getInstance().setOptions({
-        receiverApplicationId: "336697D3"
+        receiverApplicationId: "336697D3",
         // receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID
       });
       // const castSession = new cast.framework.CastSession();
-      // console.log("🌟🚨: initializeCastApi -> castSession", castSession);
       // castSession.sendMessage("test-namespace", "helloooo");
     };
   </script>
