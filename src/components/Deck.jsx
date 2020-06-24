@@ -7,7 +7,7 @@ import {
   useChangeSlidesOnSwipe,
   useTheme,
 } from "../utils/customHooks";
-import { STYLE_START, STYLE_END, BREAKPOINTS } from "../utils/constants";
+import { BREAKPOINTS } from "../utils/constants";
 import Slide from "./Slide";
 
 const DeckStyles = styled.div`
@@ -68,17 +68,29 @@ export default function Deck() {
             MAX_EXTRA_CHARACTERS_ON_SINGLE_IMAGE_SLIDE;
 
         // add <style></style> at top of slide for custom css
-        const cssStartIndex = slideText.indexOf(STYLE_START);
-        const cssEndIndex = slideText.indexOf(STYLE_END);
+        const STYLE_TAG_START = "css{";
+        const STYLE_TAG_END = "}css";
+        const cssStartIndex =
+          slideText.indexOf(STYLE_TAG_START) ||
+          slideText.indexOf(STYLE_TAG_START.toUpperCase());
+        const cssEndIndex =
+          slideText.indexOf(STYLE_TAG_END) ||
+          slideText.indexOf(STYLE_TAG_END.toUpperCase());
         const doesHaveCss = cssStartIndex !== -1;
 
         const slideCustomCss = doesHaveCss
-          ? slideText.slice(cssStartIndex + STYLE_START.length, cssEndIndex)
+          ? slideText.slice(cssStartIndex + STYLE_TAG_START.length, cssEndIndex)
           : ``;
+        const textBeforeStyleTag = slideText.slice(0, cssStartIndex);
+        const texTAfterStyleTag = slideText.slice(
+          cssEndIndex + STYLE_TAG_START.length
+        );
         const slideTextWithoutCss = doesHaveCss
-          ? slideText.slice(
-              STYLE_START.length + slideCustomCss.length + STYLE_END.length + 1
-            )
+          ? // remove the css
+            textBeforeStyleTag +
+            texTAfterStyleTag /* slideText.slice(
+              STYLE_TAG_START.length + slideCustomCss.length + STYLE_TAG_END.length + 1
+            ) */
           : slideText;
 
         return (

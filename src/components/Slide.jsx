@@ -35,7 +35,7 @@ const SINGLE_IMAGE_SLIDE_PROPS = {
   options: {
     overrides: {
       p: {
-        component: SingleImageSlidePReplacement,
+        component: SingleImageSlidePElementReplacement,
       },
       img: {
         props: {
@@ -52,7 +52,7 @@ const MULTI_IMAGE_SLIDE_PROPS = {
   options: {
     overrides: {
       img: {
-        component: MultiImageImgReplacement,
+        component: MultiImageImgElementReplacement,
       },
       p: {
         component: "div",
@@ -102,10 +102,11 @@ export default function Slide({
   );
 }
 
-function SingleImageSlidePReplacement(props) {
+function SingleImageSlidePElementReplacement(props) {
   const imgChild = props.children[0];
   return (
     <div
+      className="img-wrapper"
       style={{
         backgroundImage: `url(${imgChild.props.src})`,
         backgroundRepeat: "no-repeat",
@@ -120,7 +121,7 @@ function SingleImageSlidePReplacement(props) {
   );
 }
 
-function MultiImageImgReplacement(props) {
+function MultiImageImgElementReplacement(props) {
   return (
     <div
       style={{

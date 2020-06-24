@@ -1,12 +1,44 @@
-export const defaultValue = `# My Sweet Deck
-## 😎✨🆒
----
-Check out the [Markdown Cheat Sheet](https://www.markdownguide.org/cheat-sheet/)
----
-![A random image](https://picsum.photos/250/500)`;
+export const defaultValue = `
+# MD deck builder
+# 🐱‍🚀
 
-export const STYLE_START = "css{";
-export const STYLE_END = "}css";
+---
+
+Check out the [MarkDown Cheat Sheet](https://www.markdownguide.org/cheat-sheet/)
+
+---
+
+![A random image](https://picsum.photos/250/500)
+
+---
+
+css{h1{font-size: 9px} p{font-size: 99px}}css
+
+# now with
+
+custom styles!
+
+---
+
+css{
+    div:first-child{
+        animation: 0.5s ease-in-out infinite spinning;
+    }
+    @keyframes spinning {
+        from {
+            transform: rotate(90deg);
+        }
+        50% {
+            transform: scale(0.5) rotate(60deg);
+        }
+        to {
+            transform: rotate(0deg);
+        }
+    }
+}css
+
+![](https://emojis.slackmojis.com/emojis/images/1547582922/5197/party_blob.gif?1547582922)
+`;
 
 export const blackColor = "hsla(0, 0%, 10%, 1)";
 
