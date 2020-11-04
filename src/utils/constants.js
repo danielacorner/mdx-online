@@ -38,6 +38,11 @@ css{
 }css
 
 ![](https://emojis.slackmojis.com/emojis/images/1547582922/5197/party_blob.gif?1547582922)
+
+---
+Heck, you could even write in html 🙀
+
+<img src="https://carlosarellanoblog.files.wordpress.com/2017/03/cropped-jardin.jpg">
 `;
 
 export const blackColor = "hsla(0, 0%, 10%, 1)";
