@@ -13,10 +13,20 @@ import Slide from "./Slide";
 const DeckStyles = styled.div`
   height: 100%;
   width: 100%;
-  max-width: 100vw;
+  max-width: 80vw;
+  margin: auto;
   code {
     color: #e8912d;
     font-size: 0.9em;
+  }
+  ul,
+  ol {
+    margin: auto;
+    width: fit-content;
+    li {
+      text-align: left;
+      margin-bottom: 1em;
+    }
   }
 `;
 
