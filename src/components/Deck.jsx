@@ -20,6 +20,10 @@ const MAX_EXTRA_CHARACTERS_ON_SINGLE_IMAGE_SLIDE = 2;
 
 export default function Deck() {
   const { slides, slideIndex, stepBack, stepForward } = useDeck();
+  console.log(
+    "🌟🚨 ~ file: Deck.jsx ~ line 23 ~ Deck ~ slideIndex",
+    slideIndex
+  );
 
   // sync the hash with the slide index
   useSyncDeckWithHash(slideIndex);
@@ -42,6 +46,7 @@ export default function Deck() {
         }
       `}
     >
+      <SlideIndicator {...{ slideIndex, numSlides: slides.length }} />
       {slides.map((slideText, idx) => {
         // render all slides, then only show current
         const isOneOrMoreImageInSlide =
@@ -87,8 +92,7 @@ export default function Deck() {
         );
         const slideTextWithoutCss = doesHaveCss
           ? // remove the css
-            textBeforeStyleTag +
-            texTAfterStyleTag /* slideText.slice(
+            textBeforeStyleTag + texTAfterStyleTag /* slideText.slice(
               STYLE_TAG_START.length + slideCustomCss.length + STYLE_TAG_END.length + 1
             ) */
           : slideText;
@@ -110,3 +114,12 @@ export default function Deck() {
     </DeckStyles>
   );
 }
+function SlideIndicator({ slideIndex, numSlides }) {
+  return <Styles>{`${slideIndex + 1}/${numSlides}`}</Styles>;
+}
+const Styles = styled.div`
+  position: absolute;
+  top: 0;
+  right: 4px;
+  color: white;
+`;
