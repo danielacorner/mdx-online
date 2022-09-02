@@ -69,6 +69,7 @@ const EditorAndPreviewStyles = styled.div`
     width: fit-content;
     li {
       text-align: left;
+      margin-bottom: 1em;
     }
   }
 `;
