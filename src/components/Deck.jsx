@@ -9,6 +9,8 @@ import {
 } from "../utils/customHooks";
 import { BREAKPOINTS } from "../utils/constants";
 import Slide from "./Slide";
+const GLOBAL_STYLE_TAG_START = "global{";
+const GLOBAL_STYLE_TAG_END = "}global";
 
 const DeckStyles = styled.div`
   height: 100%;
@@ -49,6 +51,23 @@ export default function Deck() {
   const swipeHandlers = useChangeSlidesOnSwipe({ stepForward, stepBack });
 
   const { color, background } = useTheme();
+  const globalCss = slides.reduce((acc, slideText) => {
+    const cssStartIndex =
+      slideText.indexOf(GLOBAL_STYLE_TAG_START) ||
+      slideText.indexOf(GLOBAL_STYLE_TAG_START.toUpperCase());
+    const cssEndIndex =
+      slideText.indexOf(GLOBAL_STYLE_TAG_END) ||
+      slideText.indexOf(GLOBAL_STYLE_TAG_END.toUpperCase());
+    const doesHaveCss = cssStartIndex !== -1;
+
+    const slideCustomCss = doesHaveCss
+      ? slideText.slice(
+          cssStartIndex + GLOBAL_STYLE_TAG_START.length,
+          cssEndIndex
+        )
+      : ``;
+    return acc + slideCustomCss;
+  }, "");
   return (
     <DeckStyles
       className="presentation-deck"
@@ -58,10 +77,13 @@ export default function Deck() {
         @media (min-width: ${BREAKPOINTS.TABLET}px) {
           font-size: 1em;
         }
+        ${globalCss}
       `}
     >
       <SlideIndicator {...{ slideIndex, numSlides: slides.length }} />
-      {slides.map((slideText, idx) => {
+      {slides.map((originalSlideText, idx) => {
+        let slideText = originalSlideText;
+
         // render all slides, then only show current
         const isOneOrMoreImageInSlide =
           slideText.includes("](") && slideText.includes("![");
@@ -104,11 +126,32 @@ export default function Deck() {
         const texTAfterStyleTag = slideText.slice(
           cssEndIndex + STYLE_TAG_START.length
         );
-        const slideTextWithoutCss = doesHaveCss
+        slideText = doesHaveCss
           ? // remove the css
             textBeforeStyleTag + texTAfterStyleTag /* slideText.slice(
               STYLE_TAG_START.length + slideCustomCss.length + STYLE_TAG_END.length + 1
             ) */
+          : slideText;
+
+        const globalcssStartIndex =
+          slideText.indexOf(GLOBAL_STYLE_TAG_START) === 0
+            ? 0
+            : slideText.indexOf(GLOBAL_STYLE_TAG_START);
+        const globalcssEndIndex =
+          slideText.indexOf(GLOBAL_STYLE_TAG_END) === 0
+            ? 0
+            : slideText.indexOf(GLOBAL_STYLE_TAG_END);
+        const doesHaveGlobalCss = globalcssStartIndex !== -1;
+        const textBeforeGlobalStyleTag = slideText.slice(
+          0,
+          globalcssStartIndex
+        );
+        const texTAfterGlobalStyleTag = slideText.slice(
+          globalcssEndIndex + GLOBAL_STYLE_TAG_START.length
+        );
+
+        slideText = doesHaveGlobalCss
+          ? textBeforeGlobalStyleTag + texTAfterGlobalStyleTag
           : slideText;
 
         return (
@@ -117,7 +160,7 @@ export default function Deck() {
             isOneOrMoreImageInSlide={isOneOrMoreImageInSlide}
             isSingleImageSlideNoText={isSingleImageSlideNoText}
             slideCustomCss={slideCustomCss}
-            slideTextWithoutCss={slideTextWithoutCss}
+            slideTextWithoutCss={slideText}
             slideIndex={slideIndex}
             color={color}
             background={background}

@@ -64,15 +64,6 @@ const EditorAndPreviewStyles = styled.div`
       color: ${(props) => props.STYLES.color};
     }
   }
-  ul {
-    margin: auto;
-    width: fit-content;
-    ol,
-    li {
-      text-align: left;
-      margin-bottom: 1em;
-    }
-  }
 `;
 
 export default function EditorAndPreview({ isPreviewVisible, isLightTheme }) {
