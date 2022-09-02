@@ -67,6 +67,7 @@ const EditorAndPreviewStyles = styled.div`
   ul {
     margin: auto;
     width: fit-content;
+    ol,
     li {
       text-align: left;
       margin-bottom: 1em;
