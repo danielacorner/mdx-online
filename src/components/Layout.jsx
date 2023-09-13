@@ -13,8 +13,6 @@ import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import { blue, indigo } from "@material-ui/core/colors";
 import { useDeck } from "../utils/customHooks";
 import { blackColor } from "../utils/constants";
-// import { CastButton } from "react-cast-sender";
-// import { useCastPlayer } from "react-cast-sender";
 
 const theme = createMuiTheme({
   palette: {
@@ -82,7 +80,7 @@ const ControlsStyles = styled.div`
  */
 export default function Layout({ isPresentationPage, pathToDeck, children }) {
   const { deckDataEncoded, deckDataDecoded } = useDeck();
-  const { pathname, search, hash } = useLocation();
+  const { pathname, search, hash, href } = useLocation();
   const { origin } = window.location;
   const pathToShare = `${origin}/?deck=${deckDataEncoded}`;
 
@@ -93,7 +91,7 @@ export default function Layout({ isPresentationPage, pathToDeck, children }) {
       deckDataDecoded && deckDataDecoded.length > 10
         ? `${deckDataDecoded.slice(0, 10)}...`
         : deckDataDecoded,
-    url: pathToShare,
+    url: href,
   };
   const [, /* isCopied */ setCopied] = useCopyClipboard(pathToShare);
   const [copiedValue, setCopiedValue] = useState();
@@ -144,22 +142,22 @@ function Controls({
       {/* does navigator contain the share api */}
       {Boolean("share" in navigator) ? (
         <Button variant="contained" onClick={() => handleShare(shareData)}>
-          <ShareIcon />
+          Share<ShareIcon />
         </Button>
-      ) : (
-        <Button
-          variant="contained"
-          className={`${showSnackbar ? "copied" : ""}`}
-          onClick={() => {
-            setCopied(pathToShare);
-            setCopiedValue(pathToShare);
-            setTimeout(() => setCopiedValue(null), 2500);
-          }}
-        >
-          Share
-          <FileCopyIcon />
-        </Button>
-      )}
+      ) : null}
+      <Button
+        variant="contained"
+        className={`${showSnackbar ? "copied" : ""}`}
+        onClick={() => {
+          setCopied(pathToShare);
+          setCopiedValue(pathToShare);
+          setTimeout(() => setCopiedValue(null), 2500);
+        }}
+      >
+        Copy url
+        <FileCopyIcon />
+      </Button>
+
       {isPresentationPage ? (
         <>
           <Link to={pathBackToEdit}>
