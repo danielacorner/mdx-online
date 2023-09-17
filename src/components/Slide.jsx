@@ -5,6 +5,7 @@ import styled from "styled-components/macro";
 import { TRANSITION } from "../utils/constants";
 
 const SlideStyles = styled.div`
+  position: relative;
   display: ${(props) => (props.idx === props.slideIndex ? `grid` : `none`)};
   height: 100%;
   width: 100%;
@@ -93,8 +94,8 @@ export default function Slide({
         {...(isSingleImageSlideNoText
           ? SINGLE_IMAGE_SLIDE_PROPS
           : isOneOrMoreImageInSlide
-          ? MULTI_IMAGE_SLIDE_PROPS
-          : {})}
+            ? MULTI_IMAGE_SLIDE_PROPS
+            : {})}
       >
         {slideTextWithoutCss}
       </Markdown>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components/macro";
 import {
   useDeck,
@@ -9,6 +9,7 @@ import {
 } from "../utils/customHooks";
 import { BREAKPOINTS } from "../utils/constants";
 import Slide from "./Slide";
+import { useEffect } from "react";
 const GLOBAL_STYLE_TAG_START = "global{";
 const GLOBAL_STYLE_TAG_END = "}global";
 
@@ -36,10 +37,6 @@ const MAX_EXTRA_CHARACTERS_ON_SINGLE_IMAGE_SLIDE = 2;
 
 export default function Deck() {
   const { slides, slideIndex, stepBack, stepForward } = useDeck();
-  console.log(
-    "🌟🚨 ~ file: Deck.jsx ~ line 23 ~ Deck ~ slideIndex",
-    slideIndex
-  );
 
   // sync the hash with the slide index
   useSyncDeckWithHash(slideIndex);
@@ -62,9 +59,9 @@ export default function Deck() {
 
     const slideCustomCss = doesHaveCss
       ? slideText.slice(
-          cssStartIndex + GLOBAL_STYLE_TAG_START.length,
-          cssEndIndex
-        )
+        cssStartIndex + GLOBAL_STYLE_TAG_START.length,
+        cssEndIndex
+      )
       : ``;
     return acc + slideCustomCss;
   }, "");
@@ -91,9 +88,9 @@ export default function Deck() {
         const firstImageText = !isOneOrMoreImageInSlide
           ? ""
           : slideText.slice(
-              slideText.indexOf("!["),
-              slideText.lastIndexOf(")") + 1
-            );
+            slideText.indexOf("!["),
+            slideText.lastIndexOf(")") + 1
+          );
 
         const imageTextLength = firstImageText.length;
 
@@ -106,7 +103,7 @@ export default function Deck() {
           // no more than a couple characters on either side of the image link
           // for a full-page image slide
           numCharsOtherThanImageText <=
-            MAX_EXTRA_CHARACTERS_ON_SINGLE_IMAGE_SLIDE;
+          MAX_EXTRA_CHARACTERS_ON_SINGLE_IMAGE_SLIDE;
 
         // add <style></style> at top of slide for custom css
         const STYLE_TAG_START = "css{";
@@ -128,7 +125,7 @@ export default function Deck() {
         );
         slideText = doesHaveCss
           ? // remove the css
-            textBeforeStyleTag + texTAfterStyleTag /* slideText.slice(
+          textBeforeStyleTag + texTAfterStyleTag /* slideText.slice(
               STYLE_TAG_START.length + slideCustomCss.length + STYLE_TAG_END.length + 1
             ) */
           : slideText;
@@ -172,11 +169,23 @@ export default function Deck() {
   );
 }
 function SlideIndicator({ slideIndex, numSlides }) {
-  return <Styles>{`${slideIndex + 1}/${numSlides}`}</Styles>;
+  const [show, setShow] = useState(false)
+
+  useEffect(() => {
+    setShow(true)
+    setTimeout(() => {
+      setShow(false)
+    }, 1000)
+  }, [slideIndex])
+
+  return <Styles show={show}>{`${slideIndex + 1}/${numSlides}`}</Styles>;
 }
 const Styles = styled.div`
   position: absolute;
-  top: 0;
-  right: 4px;
+  top: 0.25em;
+  right: 0.5em;
   color: white;
+  font-size: 2em;
+  transition: opacity 0.5s;
+  opacity: ${(props) => (props.show ? 1 : 0)};
 `;
