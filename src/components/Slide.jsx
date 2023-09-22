@@ -96,6 +96,15 @@ export default function Slide({
           : isOneOrMoreImageInSlide
             ? MULTI_IMAGE_SLIDE_PROPS
             : {})}
+        options={{
+          overrides: {
+            a: {
+              props: {
+                target: '_blank'
+              }
+            }
+          }
+        }}
       >
         {slideTextWithoutCss}
       </Markdown>
