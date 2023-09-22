@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styled from "styled-components/macro";
+import styled from "styled-components";
 import { useLocation } from "react-router";
 import { Button, Snackbar } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";

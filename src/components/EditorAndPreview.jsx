@@ -10,7 +10,7 @@ import {
   defaultValue,
 } from "../utils/constants";
 import ReactMde from "react-mde";
-import styled from "styled-components/macro";
+import styled from "styled-components";
 import { useMediaQuery } from "@material-ui/core";
 import { useHistory, useLocation } from "react-router";
 import { useDeck } from "../utils/customHooks";
@@ -27,9 +27,9 @@ const EditorAndPreviewStyles = styled.div`
   width: 100%;
   display: grid;
   grid-template-columns: ${(props) =>
-    props.isPreviewVisible && props.isTabletOrLarger ? "50vw 50vw" : "1fr"};
+    props.$isPreviewVisible && props.$isTabletOrLarger ? "50vw 50vw" : "1fr"};
   grid-template-rows: ${(props) =>
-    props.isPreviewVisible && !props.isTabletOrLarger ? "50vh 50vh" : "1fr"};
+    props.$isPreviewVisible && !props.$isTabletOrLarger ? "50vh 50vh" : "1fr"};
   .editor {
     width: 100%;
     max-width: 100vw;
@@ -60,8 +60,8 @@ const EditorAndPreviewStyles = styled.div`
     textarea,
     .mde-header,
     .mde-header * {
-      background: ${(props) => props.STYLES.background};
-      color: ${(props) => props.STYLES.color};
+      background: ${(props) => props.$STYLES.background};
+      color: ${(props) => props.$STYLES.color};
     }
   }
 `;
@@ -164,9 +164,9 @@ export default function EditorAndPreview({ isPreviewVisible, isLightTheme }) {
   const STYLES = THEMES[isLightTheme ? "LIGHT" : "DARK"].STYLES;
   return (
     <EditorAndPreviewStyles
-      STYLES={STYLES}
-      isPreviewVisible={isPreviewVisible}
-      isTabletOrLarger={isTabletOrLarger}
+      $STYLES={STYLES}
+      $isPreviewVisible={isPreviewVisible}
+      $isTabletOrLarger={isTabletOrLarger}
       className="editorAndPreview"
     >
       <div className="editor">
@@ -194,9 +194,8 @@ export default function EditorAndPreview({ isPreviewVisible, isLightTheme }) {
               value={editorValue}
               onChange={handleEditorChange}
               editorDidMount={editorDidMount}
-              height={`calc(${
-                isPreviewVisible && !isTabletOrLarger ? 50 : 100
-              }vh - ${PROMPT_HEIGHT_PX}px)`}
+              height={`calc(${isPreviewVisible && !isTabletOrLarger ? 50 : 100
+                }vh - ${PROMPT_HEIGHT_PX}px)`}
               width={"100%"}
               language="markdown"
               theme={isLightTheme ? "light" : "dark"}

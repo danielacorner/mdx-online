@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Switch, useMediaQuery } from "@material-ui/core";
-import styled from "styled-components/macro";
+import styled from "styled-components";
 import { BREAKPOINTS, THEMES } from "../utils/constants";
 import { useWindowSize } from "../utils/customHooks";
 import queryString from "query-string";
@@ -20,7 +20,7 @@ const ControlsStyles = styled.div`
     }
   }
   .layoutSwitch .preview {
-    color: ${(props) => (props.isLightTheme ? "black" : "white")};
+    color: ${(props) => (props.$isLightTheme ? "black" : "white")};
   }
 `;
 
@@ -57,7 +57,7 @@ export default function EditorControls({
         left: isTabletOrLarger ? 30 : windowSize.width - 160,
         top: windowSize.height - (isTabletOrLarger ? 90 : 140),
       }}
-      isLightTheme={isLightTheme}
+      $isLightTheme={isLightTheme}
     >
       <div className="layoutSwitch">
         <span className="preview">Preview</span>{" "}

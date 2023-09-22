@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styled from "styled-components/macro";
+import styled from "styled-components";
 import {
   useDeck,
   useSyncDeckWithHash,
@@ -178,7 +178,7 @@ function SlideIndicator({ slideIndex, numSlides }) {
     }, 1000)
   }, [slideIndex])
 
-  return <Styles show={show}>{`${slideIndex + 1}/${numSlides}`}</Styles>;
+  return <Styles $show={show}>{`${slideIndex + 1}/${numSlides}`}</Styles>;
 }
 const Styles = styled.div`
   position: absolute;
@@ -187,5 +187,5 @@ const Styles = styled.div`
   color: white;
   font-size: 2em;
   transition: opacity 0.5s;
-  opacity: ${(props) => (props.show ? 1 : 0)};
+  opacity: ${(props) => (props.$show ? 1 : 0)};
 `;

@@ -1,20 +1,20 @@
 import Markdown from "markdown-to-jsx";
 import React from "react";
-import styled from "styled-components/macro";
+import styled from "styled-components";
 
 import { TRANSITION } from "../utils/constants";
 
 const SlideStyles = styled.div`
   position: relative;
-  display: ${(props) => (props.idx === props.slideIndex ? `grid` : `none`)};
+  display: ${(props) => (props.$idx === props.$slideIndex ? `grid` : `none`)};
   height: 100%;
   width: 100%;
   & > div {
     max-width: 100vw;
   }
   transition: ${TRANSITION};
-  background: ${(props) => props.background};
-  color: ${(props) => props.color};
+  background: ${(props) => props.$background};
+  color: ${(props) => props.$color};
   text-align: center;
   place-items: center;
   font-size: 2em;
@@ -29,7 +29,7 @@ const SlideStyles = styled.div`
   a {
     color: hsl(240, 100%, 59%);
   }
-  ${(props) => props.slideCustomCss}
+  ${(props) => props.$slideCustomCss}
 `;
 
 const SINGLE_IMAGE_SLIDE_PROPS = {
@@ -83,12 +83,12 @@ export default function Slide({
 }) {
   return (
     <SlideStyles
-      isImageSlide={isSingleImageSlideNoText}
-      slideCustomCss={slideCustomCss}
-      idx={idx}
-      slideIndex={slideIndex}
-      background={background}
-      color={color}
+      $isImageSlide={isSingleImageSlideNoText}
+      $slideCustomCss={slideCustomCss}
+      $idx={idx}
+      $slideIndex={slideIndex}
+      $background={background}
+      $color={color}
     >
       <Markdown
         {...(isSingleImageSlideNoText
