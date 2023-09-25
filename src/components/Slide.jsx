@@ -19,7 +19,7 @@ const SlideStyles = styled.div`
   place-items: center;
   font-size: 2em;
   font-family: "Sen", sans-serif;
-  user-select: none;
+  user-select: auto;
   padding: 0.5em 0;
   img {
     max-width: min(95vw, 1024px);
@@ -94,16 +94,16 @@ export default function Slide({
         {...(isSingleImageSlideNoText
           ? SINGLE_IMAGE_SLIDE_PROPS
           : isOneOrMoreImageInSlide
-            ? MULTI_IMAGE_SLIDE_PROPS
-            : {})}
+          ? MULTI_IMAGE_SLIDE_PROPS
+          : {})}
         options={{
           overrides: {
             a: {
               props: {
-                target: '_blank'
-              }
-            }
-          }
+                target: "_blank",
+              },
+            },
+          },
         }}
       >
         {slideTextWithoutCss}

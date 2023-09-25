@@ -135,11 +135,15 @@ export function useChangeSlidesOnSwipe({ stepForward, stepBack }) {
     trackMouse: true, // track mouse input
     preventDefaultTouchmoveEvent: true,
   };
+  const isTouchDevice = getIsTouchDevice();
   return useSwipeable({
-    onSwipedLeft: stepForward,
-    onSwipedRight: stepBack,
+    onSwipedLeft: isTouchDevice ? stepForward : () => { },
+    onSwipedRight: isTouchDevice ? stepBack : () => { },
     ...swipeConfig,
   });
+}
+function getIsTouchDevice() {
+  return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 }
 
 export const useTheme = () => {
