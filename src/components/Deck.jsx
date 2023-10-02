@@ -31,6 +31,7 @@ const DeckStyles = styled.div`
       margin-bottom: 1em;
     }
   }
+  ${(p) => p.css}
 `;
 
 const MAX_EXTRA_CHARACTERS_ON_SINGLE_IMAGE_SLIDE = 2;
@@ -59,9 +60,9 @@ export default function Deck() {
 
     const slideCustomCss = doesHaveCss
       ? slideText.slice(
-        cssStartIndex + GLOBAL_STYLE_TAG_START.length,
-        cssEndIndex
-      )
+          cssStartIndex + GLOBAL_STYLE_TAG_START.length,
+          cssEndIndex
+        )
       : ``;
     return acc + slideCustomCss;
   }, "");
@@ -88,9 +89,9 @@ export default function Deck() {
         const firstImageText = !isOneOrMoreImageInSlide
           ? ""
           : slideText.slice(
-            slideText.indexOf("!["),
-            slideText.lastIndexOf(")") + 1
-          );
+              slideText.indexOf("!["),
+              slideText.lastIndexOf(")") + 1
+            );
 
         const imageTextLength = firstImageText.length;
 
@@ -103,7 +104,7 @@ export default function Deck() {
           // no more than a couple characters on either side of the image link
           // for a full-page image slide
           numCharsOtherThanImageText <=
-          MAX_EXTRA_CHARACTERS_ON_SINGLE_IMAGE_SLIDE;
+            MAX_EXTRA_CHARACTERS_ON_SINGLE_IMAGE_SLIDE;
 
         // add <style></style> at top of slide for custom css
         const STYLE_TAG_START = "css{";
@@ -125,7 +126,7 @@ export default function Deck() {
         );
         slideText = doesHaveCss
           ? // remove the css
-          textBeforeStyleTag + texTAfterStyleTag /* slideText.slice(
+            textBeforeStyleTag + texTAfterStyleTag /* slideText.slice(
               STYLE_TAG_START.length + slideCustomCss.length + STYLE_TAG_END.length + 1
             ) */
           : slideText;
@@ -169,14 +170,14 @@ export default function Deck() {
   );
 }
 function SlideIndicator({ slideIndex, numSlides }) {
-  const [show, setShow] = useState(false)
+  const [show, setShow] = useState(false);
 
   useEffect(() => {
-    setShow(true)
+    setShow(true);
     setTimeout(() => {
-      setShow(false)
-    }, 1000)
-  }, [slideIndex])
+      setShow(false);
+    }, 1000);
+  }, [slideIndex]);
 
   return <Styles $show={show}>{`${slideIndex + 1}/${numSlides}`}</Styles>;
 }
