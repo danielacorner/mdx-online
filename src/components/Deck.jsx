@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import {
   useDeck,
@@ -9,15 +9,16 @@ import {
 } from "../utils/customHooks";
 import { BREAKPOINTS } from "../utils/constants";
 import Slide from "./Slide";
-import { useEffect } from "react";
+import { SlideIndicator } from "./SlideIndicator";
 const GLOBAL_STYLE_TAG_START = "global{";
 const GLOBAL_STYLE_TAG_END = "}global";
 
 const DeckStyles = styled.div`
   height: 100%;
   width: 100%;
-  max-width: 80vw;
+  /* max-width: 80vw; */
   margin: auto;
+  position: relative;
   code {
     color: #e8912d;
     font-size: 0.9em;
@@ -78,7 +79,9 @@ export default function Deck() {
         ${globalCss}
       `}
     >
-      <SlideIndicator {...{ slideIndex, numSlides: slides.length }} />
+      <SlideIndicator
+        {...{ slideIndex, numSlides: slides.length, stepBack, stepForward }}
+      />
       {slides.map((originalSlideText, idx) => {
         let slideText = originalSlideText;
 
@@ -169,24 +172,3 @@ export default function Deck() {
     </DeckStyles>
   );
 }
-function SlideIndicator({ slideIndex, numSlides }) {
-  const [show, setShow] = useState(false);
-
-  useEffect(() => {
-    setShow(true);
-    setTimeout(() => {
-      setShow(false);
-    }, 1000);
-  }, [slideIndex]);
-
-  return <Styles $show={show}>{`${slideIndex + 1}/${numSlides}`}</Styles>;
-}
-const Styles = styled.div`
-  position: absolute;
-  top: 0.25em;
-  right: 0.5em;
-  color: white;
-  font-size: 2em;
-  transition: opacity 0.5s;
-  opacity: ${(props) => (props.$show ? 1 : 0)};
-`;

@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { useHistory, useLocation } from "react-router";
 import lzString from "lz-string";
-import { defaultValue, THEMES } from "./constants";
+import { defaultValue as DEFAULT_VALUE, THEMES } from "./constants";
 import { useSwipeable } from "react-swipeable";
 import qs from "query-string";
+import { debounce } from "@material-ui/core";
 
 // https://usehooks.com/useEventListener/
 const isWindowAvailable = typeof window !== `undefined`;
@@ -75,21 +76,26 @@ const SEPARATORS = ["---", "\\*\\*\\*"];
 
 export function useDeck() {
   const { search, hash } = useLocation();
+
   const { d: deckData } = qs.parse(search);
   const deckDataEncoded = deckData || search.slice(1);
-  const deckDataDecoded = lzString.decompressFromEncodedURIComponent(
+
+  const deckDataDecoded = useMemo(() => lzString.decompressFromEncodedURIComponent(
     deckDataEncoded
-  );
+  ), [deckDataEncoded]);;
+
+  const slides = useMemo(() => {
+    return (deckDataDecoded || DEFAULT_VALUE).split(
+      new RegExp(SEPARATORS.join("|"), "g")
+    )
+  }, [deckDataDecoded]);
 
   const indexFromHash = hash?.slice(1);
   const [slideIndex, setSlideIndex] = useState(Number(indexFromHash) || 0);
-  const slides = (deckDataDecoded || defaultValue).split(
-    new RegExp(SEPARATORS.join("|"), "g")
-  );
 
-  const stepBack = () => setSlideIndex(Math.max(0, slideIndex - 1));
-  const stepForward = () =>
-    setSlideIndex(Math.min(slides.length - 1, slideIndex + 1));
+  const stepBack = useCallback(() => setSlideIndex(prev => Math.max(0, prev - 1)), []);
+  const stepForward = useCallback(() =>
+    setSlideIndex(prev => Math.min(slides.length - 1, prev + 1)), []);
 
   const [isPresentationMode, setIsPresentationMode] = useState(false);
 
@@ -127,7 +133,7 @@ export function useChangeSlidesOnKeydownOrMousewheel({
       stepBack();
     }
   };
-  useEventListener("wheel", handleMouseWheel);
+  useEventListener("wheel", debounce(handleMouseWheel, 120));
 }
 
 export function useChangeSlidesOnSwipe({ stepForward, stepBack }) {
