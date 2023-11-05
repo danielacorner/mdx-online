@@ -148,7 +148,7 @@ export function useChangeSlidesOnSwipe({ stepForward, stepBack }) {
     ...swipeConfig,
   });
 }
-function getIsTouchDevice() {
+export function getIsTouchDevice() {
   return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 }
 

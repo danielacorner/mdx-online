@@ -6,6 +6,7 @@ import {
   useChangeSlidesOnKeydownOrMousewheel,
   useChangeSlidesOnSwipe,
   useTheme,
+  getIsTouchDevice,
 } from "../utils/customHooks";
 import { BREAKPOINTS } from "../utils/constants";
 import Slide from "./Slide";
@@ -48,7 +49,7 @@ export default function Deck() {
 
   // change slides on swipe left, right
   const swipeHandlers = useChangeSlidesOnSwipe({ stepForward, stepBack });
-
+  const isTouchDevice = getIsTouchDevice();
   const { color, background } = useTheme();
   const globalCss = slides.reduce((acc, slideText) => {
     const cssStartIndex =
@@ -70,7 +71,7 @@ export default function Deck() {
   return (
     <DeckStyles
       className="presentation-deck"
-      {...swipeHandlers}
+      {...(isTouchDevice ? swipeHandlers : {})}
       css={`
         font-size: 0.6em;
         @media (min-width: ${BREAKPOINTS.TABLET}px) {
