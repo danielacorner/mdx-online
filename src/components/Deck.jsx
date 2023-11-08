@@ -11,13 +11,15 @@ import {
 import { BREAKPOINTS } from "../utils/constants";
 import Slide from "./Slide";
 import { SlideIndicator } from "./SlideIndicator";
+import { useMeasure } from "react-use";
 const GLOBAL_STYLE_TAG_START = "global{";
 const GLOBAL_STYLE_TAG_END = "}global";
 
 const DeckStyles = styled.div`
   height: 100%;
   width: 100%;
-  /* max-width: 80vw; */
+  max-width: 90vmin;
+  max-height: 100vmin;
   margin: auto;
   position: relative;
   code {
@@ -32,6 +34,10 @@ const DeckStyles = styled.div`
       text-align: left;
       margin-bottom: 1em;
     }
+  }
+  &.shrink {
+    transform: scale(0.8);
+    transform-origin: top center;
   }
   ${(p) => p.css}
 `;
@@ -68,9 +74,12 @@ export default function Deck() {
       : ``;
     return acc + slideCustomCss;
   }, "");
+  const [ref, dimensions] = useMeasure();
+  const shrink = dimensions.width < BREAKPOINTS.TABLET;
   return (
     <DeckStyles
-      className="presentation-deck"
+      ref={ref}
+      className={`presentation-deck ${shrink ? "shrink" : ""}`}
       {...(isTouchDevice ? swipeHandlers : {})}
       css={`
         font-size: 0.6em;

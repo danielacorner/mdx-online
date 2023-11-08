@@ -22,9 +22,11 @@ const SlideStyles = styled.div`
   user-select: auto;
   padding: 0.5em 0;
   img {
-    max-width: min(95vw, 1024px);
+    max-width: min(100%, 1024px);
     height: auto;
-    max-height: min(95vh, 100%);
+    max-height: 50vmin;
+    margin: auto;
+    display: flex;
   }
   a {
     color: hsl(240, 100%, 59%);
